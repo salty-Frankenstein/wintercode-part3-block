@@ -77,6 +77,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>d2d1.lib;dwrite.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -116,9 +119,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="engine.h" />
+    <ClInclude Include="graphics.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="graphics.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="win.cpp" />
   </ItemGroup>

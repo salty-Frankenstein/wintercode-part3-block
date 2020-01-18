@@ -1,4 +1,5 @@
 #include "win.h"
+
 Wnd::Wnd() {
 	height = 800;
 	width = 600;

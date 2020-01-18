@@ -37,4 +37,4 @@ private:
 	int width;
 };
 
-#endif
+#endif // WINDOWS_INIT

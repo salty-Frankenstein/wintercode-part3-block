@@ -1,7 +1,6 @@
 /*						*\
 		engine.h
 	一个迷你的游戏引擎
-	  封装Direct2D
 	 2020 wintercode
 	 by id:191220017
 \*						*/
@@ -11,6 +10,7 @@
 #define ENGINE_H
 
 #include "win.h"
+#include "graphics.h"
 
 bool getKey[256] = { 0 };
 
@@ -31,5 +31,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-#endif
+#endif // ENGINE_H
 
