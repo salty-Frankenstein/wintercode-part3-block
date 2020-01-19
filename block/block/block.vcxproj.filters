@@ -24,6 +24,9 @@
     <ClInclude Include="graphics.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,6 +36,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="graphics.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

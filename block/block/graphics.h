@@ -109,12 +109,12 @@ public:
 	ID2D1HwndRenderTarget* GetHandle();		//仅在测试时使用
 	ID2D1Factory * GetFactory();			//仅在测试时使用
 	bool Create();
-	bool CreateBrush(Brush &brush, D2D1_COLOR_F color);
+	bool CreateBrush(Brush &brush, COLOR color);
 	bool CreateBitmap(Bitmap &bmp);
 
 	void BeginDraw();
 	bool EndDraw();
-	void Clear(D2D1_COLOR_F color);
+	void Clear(COLOR color);
 	void DrawLine(Brush &brush, float left, float top, float right, float bottom, float width);
 
 	void DrawRectangle(Brush &brush, float left, float top, float right, float bottom, float width);
