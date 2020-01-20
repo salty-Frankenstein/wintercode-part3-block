@@ -58,10 +58,14 @@ Sprite::Sprite(double _x, double _y,
 }
 
 void Sprite::Show() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Show();
 	showCallback(this);
 }
 
 void Sprite::Update() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Update();
 	updateCallback(this);
 }
 

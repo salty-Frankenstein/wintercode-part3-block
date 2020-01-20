@@ -52,9 +52,8 @@ public:
 	Bitmap* image;
 	double width, height;	//size
 	double x, y;	//position
-	double angle;	//the angle with the x axis of rad
 
-private:
+protected:
 	void(*showCallback)(Sprite*);
 	void(*updateCallback)(Sprite*);
 
