@@ -110,6 +110,7 @@ public:
 	ID2D1Factory * GetFactory();			//仅在测试时使用
 	bool Create();
 	bool CreateBrush(Brush &brush, COLOR color);
+
 	bool CreateBitmap(Bitmap &bmp);
 
 	void BeginDraw();

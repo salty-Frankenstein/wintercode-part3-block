@@ -57,6 +57,8 @@ Sprite::Sprite(double _x, double _y,
 	height = _height;
 }
 
+Sprite::Sprite(){}
+
 void Sprite::Show() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Show();

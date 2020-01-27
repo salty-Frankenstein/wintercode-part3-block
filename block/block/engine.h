@@ -47,6 +47,7 @@ public:
 		double width = 100.f,
 		double height = 100.f
 	);
+	Sprite();
 	void Show();
 	void Update();
 	Bitmap* image;
