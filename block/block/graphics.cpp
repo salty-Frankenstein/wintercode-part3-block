@@ -52,6 +52,8 @@ void Text::SetRect(float left, float top, float right, float bottom) {
 
 
 /* class Bitmap */
+Bitmap::Bitmap() {}
+
 Bitmap::Bitmap(LPCWSTR _picname) {
 	picname = _picname;
 }

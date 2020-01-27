@@ -41,6 +41,7 @@ Sprite::Sprite(double _x, double _y,
 	updateCallback = _updateCallback;
 	width = _width;
 	height = _height;
+	del = false;
 }
 
 Sprite::Sprite(double _x, double _y,
@@ -55,6 +56,7 @@ Sprite::Sprite(double _x, double _y,
 	updateCallback = _updateCallback;
 	width = _width;
 	height = _height;
+	del = false;
 }
 
 Sprite::Sprite(){}
@@ -78,7 +80,17 @@ void ObjectBuffer::Show() {
 		(*i)->Show();
 }
 
+bool IsDeleted(Object* &x) {
+	bool t = x->del;
+	if (x->del) {
+		delete x;
+		x = nullptr;
+	}
+	return t;
+}
+
 void ObjectBuffer::Update() {
+	son.remove_if(IsDeleted);
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Update();
 }

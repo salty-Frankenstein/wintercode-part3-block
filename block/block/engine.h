@@ -24,8 +24,6 @@ public:
 	virtual void Update() = 0;
 	std::list<Object*> GetSon();
 	void AddSon(Object* s);
-
-protected:
 	bool del;
 	std::list<Object*> son;
 

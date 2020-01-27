@@ -1,4 +1,6 @@
 #include "block.h"
+#include <iostream>
+#include <fstream>
 bool Display();
 
 Wnd *myWnd = new Wnd(655, 520, Display, _T("Block"));
@@ -19,10 +21,7 @@ Bitmap ballRedImg(L"./src/ballred.png");
 Bitmap ballBlueImg(L"./src/ballblue.png");
 Bitmap ballPurpleImg(L"./src/ballpurple.png");
 
-Bitmap blockImg1(L"./src/block1.png");
-Bitmap blockImg2(L"./src/block2.png");
-Bitmap blockImg3(L"./src/block3.png");
-Bitmap blockImg4(L"./src/block4.png");
+Bitmap blockImg[5];
 
 void LoadImages() {
 	testImg.Create();
@@ -39,19 +38,14 @@ void LoadImages() {
 	myGFactory->CreateBitmap(ballBlueImg);
 	myGFactory->CreateBitmap(ballPurpleImg);
 
-
-	blockImg1.Create();
-	blockImg2.Create();
-	blockImg3.Create();
-	blockImg4.Create();
-	myGFactory->CreateBitmap(blockImg1);
-	myGFactory->CreateBitmap(blockImg2);
-	myGFactory->CreateBitmap(blockImg3);
-	myGFactory->CreateBitmap(blockImg4);
-	Block::img[1] = &blockImg1;
-	Block::img[2] = &blockImg2;
-	Block::img[3] = &blockImg3;
-	Block::img[4] = &blockImg4;
+	for (int i = 1; i <= 4; i++) {
+		std::string path;
+		path = "./src/block" + std::to_string(i) + ".png";
+		blockImg[i] = Bitmap(stringToLPCWSTR(path));
+		blockImg[i].Create();
+		myGFactory->CreateBitmap(blockImg[i]);
+		Block::img[i] = &blockImg[i];
+	}
 }
 
 auto DefaultShow = [](Sprite* t) {
@@ -62,7 +56,6 @@ auto DefaultShow = [](Sprite* t) {
 auto DefaultUpdate = [](Sprite* t) {};
 
 
-
 void BallUpdate(Rotatable* t);
 void BoardUpdate(Sprite* t);
 Sprite *background = new Sprite(0, 0, bgImg, DefaultShow, [](Sprite* t) {}, 640, 480);
@@ -70,25 +63,61 @@ Sprite *background = new Sprite(0, 0, bgImg, DefaultShow, [](Sprite* t) {}, 640,
 Sprite *board = new Sprite(400, 410, boardImg, DefaultShow, BoardUpdate, 640/6.0, 433/6.0);
 Sprite *test = new Sprite(0, 0, testImg, DefaultShow, [](Sprite* t) {t->x = x; t->y = y; }, 30, 30);
 
-Sprite *borderLeft = new Sprite(30, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 2, 450);
-Sprite *borderRight = new Sprite(415, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 2, 450);
-Sprite *borderUp = new Sprite(30, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 2);
-Sprite *borderDown = new Sprite(30, 465, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 2);
+Sprite *borderLeft = new Sprite(30-100, 15, boardImg, DefaultShow, DefaultUpdate, 100, 450);
+Sprite *borderRight = new Sprite(415, 15, boardImg, DefaultShow, DefaultUpdate, 100, 450);
+Sprite *borderUp = new Sprite(30, 15-100, boardImg, DefaultShow, DefaultUpdate, 385, 100);
+Sprite *borderDown = new Sprite(30, 465, boardImg, DefaultShow, DefaultUpdate, 385, 2);
+
+
+void BlockShow(Block* t) {
+	if (t->rank > 0) {
+		t->image = Block::img[t->rank];
+		DefaultShow(t);
+	}
+	
+}
+
+void BlockUpdate(Block *t) {
+	if (t->rank <= 0)t->del = true;
+}
+
+Block *block1 = new Block(100, 50, BlockShow, BlockUpdate, 4, 100,100);
+std::list<Block*> blocks;
 
 double ballSpeed = 5;
 double tSpeed = -0.4;
 Vec2 ballVelocity(tSpeed, sqrt(1 - tSpeed * tSpeed));//which is always an unit vector
 void BallUpdate(Rotatable* t) {
+	//update the image for showing
 	if (int(t->x + t->y)/40 % 2 == 0)
 	t->image = &ballBlueImg;
 	else t->image = &ballRedImg;
 	
+	//hitting the border
 	if (isHit(t, borderLeft) || isHit(t, borderRight))ballVelocity.x = -ballVelocity.x;
 	if (isHit(t, borderDown) || isHit(t, borderUp))ballVelocity.y = -ballVelocity.y;
 	while (isHit(t, borderLeft))t->x += 1;
 	while (isHit(t, borderRight))t->x -= 1;
 
+	//hitting the block
+	for (auto i = blocks.begin(); i != blocks.end(); i++) 
+		if (isHitCircle(t, (*i))) {
+			Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
+				- Vec2((*i)->x + 0.5*(*i)->width, (*i)->y + 0.5*(*i)->width));
+			Unitize(normal);
+			ballVelocity = ballVelocity - 2 * (ballVelocity * normal) * normal;
+			while (isHitCircle(t, (*i))) {
+				t->x += normal.x;
+				t->y += normal.y;
+			}
+			(*i)->rank--;
+			break;
+		}
+		
+	
+	
 
+	//hitting the board
 	if (isHitCircle(t, board)) {
 		Vec2 normal(Vec2(t->x+0.5*t->width,t->y+0.5*t->width)
 					- Vec2(board->x+0.5*board->width, board->y+0.5*board->width));
@@ -127,7 +156,7 @@ void BallShow(Rotatable* t) {
 	//myGFactory->GetHandle()->FillGeometry(t->Grec2, t->brush);
 }
 
-Rotatable *ball = new Rotatable(100, 100, ballRedImg, BallShow, BallUpdate, 20, 20);
+Rotatable *ball = new Rotatable(100, 400, ballRedImg, BallShow, BallUpdate, 20, 20);
 
 void BoardUpdate(Sprite* t) {
 	hitLeft = isHit(t, borderLeft);
@@ -136,14 +165,27 @@ void BoardUpdate(Sprite* t) {
 }
 
 void LoadObject() {
-	
-	pool.AddSon(test);
+	//pool.AddSon(test);
 	pool.AddSon(board);
 	
 	pool.AddSon(borderLeft);
 	pool.AddSon(borderRight);
 	pool.AddSon(borderUp);
 	pool.AddSon(borderDown);
+
+	//pool.AddSon(block1);
+	
+	std::ifstream in(L"./data/1.blk");
+	int num;
+	in >> num;
+	for (int i = 1; i <= num; i++) {
+		float tx, ty;
+		int rank;
+		in >> tx >> ty >> rank;
+		blocks.push_back(new Block(tx, ty, BlockShow, BlockUpdate, rank));
+		pool.AddSon(blocks.back());
+	}
+	
 
 	myGFactory->GetHandle()->CreateBitmapBrush(ball->image->GetBitmap(), &ball->brush);
 	myGFactory->GetFactory()->CreateRectangleGeometry(ball->rec1, &(ball->Grec));
@@ -164,26 +206,40 @@ void Init() {
 	GameInit();
 }
 
+GameState gameState = GAME;
 bool Display() {
-	keyboard();
-	myGFactory->BeginDraw();
-	myGFactory->Clear(_COLOR(Gray));
-	
-	pool.Update();
-	pool.Show();
-	myTextW.SetRect(10.f + x, 10.f + y, 300.f + x, 150.f + y);
+	switch (gameState)
+	{
+	case MENU:
 
-	myGFactory->WriteW(myTextW, blackBrush, L"今日もいい天気☆");
+		break;
+	case HISCORE:
+		break;
+	case GAME:
+		keyboard();
+		myGFactory->BeginDraw();
+		myGFactory->Clear(_COLOR(Gray));
 
-	textOut = "Position:\nx="
-	+ std::to_string(int(50 + x))
-	+ "\ny="
-	+ std::to_string(int(50 + y))
-	+ "\nisHit:"
-	+ std::to_string(isHit(board, borderLeft) || isHit(board, borderRight))
-	;
-	myGFactory->Write(myText, blackBrush, textOut);
-	
+		pool.Update();
+		pool.Show();
+		myTextW.SetRect(10.f + x, 10.f + y, 300.f + x, 150.f + y);
+
+		//myGFactory->WriteW(myTextW, blackBrush, L"今日もいい天気☆");
+
+		textOut = "Position:\nx="
+			+ std::to_string(int(50 + x))
+			+ "\ny="
+			+ std::to_string(int(50 + y))
+			+ "\nisHit:"
+			+ std::to_string(isHit(board, borderLeft) || isHit(board, borderRight))
+			;
+		myGFactory->Write(myText, blackBrush, textOut);
+		break;
+	case QUIT:
+		break;
+	default:
+		break;
+	}
 	
 	return myGFactory->EndDraw();
 }

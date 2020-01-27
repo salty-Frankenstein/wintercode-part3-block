@@ -4,6 +4,7 @@
 
 #include "engine.h"
 
+
 ObjectBuffer pool;	//ÓÎÏ·¶ÔÏó³Ø
 
 float x = 100, y = 100;
@@ -35,6 +36,7 @@ public:
 		updateCallback = _updateCallback;
 		width = _width;
 		height = _height;
+		del = false;
 
 		angle = _angle;
 		velocity = _velocity;
@@ -128,18 +130,47 @@ Vec2 operator *(float u, Vec2 v) {
 }
 
 
-struct Block :public Sprite {
+class Block :public Sprite {
+public:
 	Block(double _x, double _y,
-		Bitmap& _image, void(*_showCallback)(Sprite*),
-		void(*_updateCallback)(Sprite*),
-		double _width, double _height, int _rank)
-		:Sprite(_x, _y, _image, _showCallback, _updateCallback, _width, _height) {
+		void(*_showCallback)(Block*),
+		void(*_updateCallback)(Block*),
+		int _rank, double _width = 30, double _height = 30)
+		:Sprite() {
+		x = _x;
+		y = _y;
+		image = INVISIBLE_IMG;
+		showCallback = _showCallback;
+		updateCallback = _updateCallback;
+		width = _width;
+		height = _height;
+		del = false;
 		rank = _rank;
 	}
 	int rank;
 	static Bitmap* img[5];
+
+	void Show();
+	void Update();
+private:
+	void(*showCallback)(Block*);
+	void(*updateCallback)(Block*);
 };
 
 Bitmap* Block::img[5];
 
+void Block::Show() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Show();
+	showCallback(this);
+}
+
+void Block::Update() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Update();
+	updateCallback(this);
+}
+
+
+enum GameState { MENU, HISCORE, GAME, QUIT };
 #endif // BLOCK_H

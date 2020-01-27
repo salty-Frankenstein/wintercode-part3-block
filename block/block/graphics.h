@@ -60,6 +60,7 @@ class Bitmap
 
 class Bitmap {
 public:
+	Bitmap();
 	Bitmap(LPCWSTR _picname);
 	bool Create();
 	ID2D1Bitmap* GetBitmap();
