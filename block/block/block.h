@@ -6,7 +6,7 @@
 
 
 ObjectBuffer pool;	//”Œœ∑∂‘œÛ≥ÿ
-
+unsigned int gameTimer = 0;
 float x = 100, y = 100;
 bool hitLeft = false, hitRight = false;
 extern bool getKey[256];
@@ -148,7 +148,7 @@ public:
 		rank = _rank;
 	}
 	int rank;
-	static Bitmap* img[5];
+	static Bitmap* img[5][6];
 
 	void Show();
 	void Update();
@@ -157,7 +157,7 @@ private:
 	void(*updateCallback)(Block*);
 };
 
-Bitmap* Block::img[5];
+Bitmap* Block::img[5][6];
 
 void Block::Show() {
 	for (auto i = son.begin(); i != son.end(); i++)

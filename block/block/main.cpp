@@ -1,5 +1,5 @@
+#include "resources.h"
 #include "block.h"
-#include <iostream>
 #include <fstream>
 bool Display();
 
@@ -13,39 +13,54 @@ Text scoreTxt;
 std::string textOut;
 //float oriX = 0, oriY = 0, size = 25;
 
+Bitmap buttonImg[5][2];
 
-Bitmap testImg(L"./src/block2.png");
+
+Bitmap testImg(L"./src/enemy1.png");
 Bitmap boardImg(L"./src/reimu.png");
 Bitmap bgImg(L"./src/bg.png");
 Bitmap ballRedImg(L"./src/ballred.png");
 Bitmap ballBlueImg(L"./src/ballblue.png");
 Bitmap ballPurpleImg(L"./src/ballpurple.png");
+Bitmap maskImg(L"./src/mask.png");
 
-Bitmap blockImg[5];
+Bitmap blockImg[5][6];
 
 void LoadImages() {
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 2; j++) {
+			std::string path;
+			path = "./src/button/" + std::to_string(i) + std::to_string(j) + ".png";
+			buttonImg[i][j] = Bitmap(stringToLPCWSTR(path));
+			buttonImg[i][j].Create();
+			myGFactory->CreateBitmap(buttonImg[i][j]);
+		}
+
 	testImg.Create();
 	boardImg.Create();
 	bgImg.Create();
 	ballRedImg.Create();
 	ballBlueImg.Create();
 	ballPurpleImg.Create();
-	
+	maskImg.Create();
+
 	myGFactory->CreateBitmap(testImg);
 	myGFactory->CreateBitmap(boardImg);
 	myGFactory->CreateBitmap(bgImg);
 	myGFactory->CreateBitmap(ballRedImg);
 	myGFactory->CreateBitmap(ballBlueImg);
 	myGFactory->CreateBitmap(ballPurpleImg);
+	myGFactory->CreateBitmap(maskImg);
 
-	for (int i = 1; i <= 4; i++) {
-		std::string path;
-		path = "./src/block" + std::to_string(i) + ".png";
-		blockImg[i] = Bitmap(stringToLPCWSTR(path));
-		blockImg[i].Create();
-		myGFactory->CreateBitmap(blockImg[i]);
-		Block::img[i] = &blockImg[i];
-	}
+	for (int i = 1; i <= 4; i++)
+		for (int j = 1; j <= 5; j++) {
+			std::string path;
+			path = "./src/block" + std::to_string(i*10+j) + ".png";
+			blockImg[i][j] = Bitmap(stringToLPCWSTR(path));
+			blockImg[i][j].Create();
+			myGFactory->CreateBitmap(blockImg[i][j]);
+			Block::img[i][j] = &blockImg[i][j];
+		}
 }
 
 auto DefaultShow = [](Sprite* t) {
@@ -63,15 +78,16 @@ Sprite *background = new Sprite(0, 0, bgImg, DefaultShow, [](Sprite* t) {}, 640,
 Sprite *board = new Sprite(400, 410, boardImg, DefaultShow, BoardUpdate, 640/6.0, 433/6.0);
 Sprite *test = new Sprite(0, 0, testImg, DefaultShow, [](Sprite* t) {t->x = x; t->y = y; }, 30, 30);
 
-Sprite *borderLeft = new Sprite(30-100, 15, boardImg, DefaultShow, DefaultUpdate, 100, 450);
-Sprite *borderRight = new Sprite(415, 15, boardImg, DefaultShow, DefaultUpdate, 100, 450);
-Sprite *borderUp = new Sprite(30, 15-100, boardImg, DefaultShow, DefaultUpdate, 385, 100);
-Sprite *borderDown = new Sprite(30, 465, boardImg, DefaultShow, DefaultUpdate, 385, 2);
+Sprite *borderLeft = new Sprite(30-100, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 100, 450);
+Sprite *borderRight = new Sprite(415, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 100, 450);
+Sprite *borderUp = new Sprite(30, 15-100, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 100);
+Sprite *borderDown = new Sprite(30, 465, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 2);
 
 
 void BlockShow(Block* t) {
 	if (t->rank > 0) {
-		t->image = Block::img[t->rank];
+		t->image = Block::img[t->rank][int(gameTimer/(7+(0.2*t->rank)))%5+1];
+		//t->image = Block::img[t->rank][1];
 		DefaultShow(t);
 	}
 	
@@ -79,6 +95,8 @@ void BlockShow(Block* t) {
 
 void BlockUpdate(Block *t) {
 	if (t->rank <= 0)t->del = true;
+
+	//t->x += 0.1;
 }
 
 Block *block1 = new Block(100, 50, BlockShow, BlockUpdate, 4, 100,100);
@@ -89,7 +107,7 @@ double tSpeed = -0.4;
 Vec2 ballVelocity(tSpeed, sqrt(1 - tSpeed * tSpeed));//which is always an unit vector
 void BallUpdate(Rotatable* t) {
 	//update the image for showing
-	if (int(t->x + t->y)/40 % 2 == 0)
+	if ((gameTimer)/10 % 2 == 0)
 	t->image = &ballBlueImg;
 	else t->image = &ballRedImg;
 	
@@ -153,7 +171,7 @@ void BallUpdate(Rotatable* t) {
 
 void BallShow(Rotatable* t) {
 	myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
-	//myGFactory->GetHandle()->FillGeometry(t->Grec2, t->brush);
+	//pc0myGFactory->GetHandle()->FillGeometry(t->Grec, t->brush);
 }
 
 Rotatable *ball = new Rotatable(100, 400, ballRedImg, BallShow, BallUpdate, 20, 20);
@@ -164,8 +182,11 @@ void BoardUpdate(Sprite* t) {
 	t->x = x * 2;
 }
 
+Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600);
+
 void LoadObject() {
 	//pool.AddSon(test);
+	pool.AddSon(mask);
 	pool.AddSon(board);
 	
 	pool.AddSon(borderLeft);
@@ -186,11 +207,13 @@ void LoadObject() {
 		pool.AddSon(blocks.back());
 	}
 	
-
-	myGFactory->GetHandle()->CreateBitmapBrush(ball->image->GetBitmap(), &ball->brush);
-	myGFactory->GetFactory()->CreateRectangleGeometry(ball->rec1, &(ball->Grec));
+	
+	HRESULT t1 = myGFactory->GetHandle()->CreateBitmapBrush(ball->image->GetBitmap(), &ball->brush);
+	HRESULT t2 = myGFactory->GetFactory()->CreateRectangleGeometry(ball->rec1, &(ball->Grec));
+	//if (SUCCEEDED(t1) && SUCCEEDED(t2))
+		pool.AddSon(background);
 	pool.AddSon(ball);
-	pool.AddSon(background);
+	
 }
 
 void GameInit() {
@@ -208,6 +231,11 @@ void Init() {
 
 GameState gameState = GAME;
 bool Display() {
+	keyboard();
+	myGFactory->BeginDraw();
+	myGFactory->Clear(_COLOR(Gray));
+
+	gameTimer++;
 	switch (gameState)
 	{
 	case MENU:
@@ -216,9 +244,7 @@ bool Display() {
 	case HISCORE:
 		break;
 	case GAME:
-		keyboard();
-		myGFactory->BeginDraw();
-		myGFactory->Clear(_COLOR(Gray));
+		
 
 		pool.Update();
 		pool.Show();
@@ -230,8 +256,10 @@ bool Display() {
 			+ std::to_string(int(50 + x))
 			+ "\ny="
 			+ std::to_string(int(50 + y))
-			+ "\nisHit:"
-			+ std::to_string(isHit(board, borderLeft) || isHit(board, borderRight))
+			+ "\ntime:"
+			+ std::to_string(gameTimer/60)
+			//+ "\nisHit:"
+			//+ std::to_string(isHit(board, borderLeft) || isHit(board, borderRight))
 			;
 		myGFactory->Write(myText, blackBrush, textOut);
 		break;
