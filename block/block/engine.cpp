@@ -1,14 +1,17 @@
 #include "engine.h"
 bool getKey[256] = { 0 };
+bool keyDown = false;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 	case WM_KEYDOWN:
 		getKey[wParam] = true;
+		keyDown = true;
 		return 0;
 
 	case WM_KEYUP:
 		getKey[wParam] = false;
+		keyDown = false;
 		return 0;
 
 	case WM_DESTROY:

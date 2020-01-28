@@ -3,23 +3,53 @@
 #define BLOCK_H
 
 #include "engine.h"
+GFactory *myGFactory;
+enum GameState { MENU, HISCORE, GAME, QUIT };
 
-
-ObjectBuffer pool;	//ÓÎÏ·¶ÔÏó³Ø
-unsigned int gameTimer = 0;
+unsigned long long gameTimer = 0;
 float x = 100, y = 100;
 bool hitLeft = false, hitRight = false;
+int menuButtonOn = 0;
+bool pressedEnter = false;
 extern bool getKey[256];
-void keyboard() {
-	if (getKey[VK_LEFT] && !hitLeft)
-		x -= 5;
-	if (getKey[VK_RIGHT] && !hitRight)
-		x += 5;
-	if (getKey[VK_UP])
-		y -= 5;
-	if (getKey[VK_DOWN])
-		y += 5;
+void keyboard(GameState state) {
+	switch (state)
+	{
+	case MENU:
+		if ((gameTimer) % 5 == 0) {
+			if (getKey[VK_UP])
+				menuButtonOn = (menuButtonOn + 4) % 5;
+			if (getKey[VK_DOWN])
+				menuButtonOn = (menuButtonOn + 1) % 5;
+			if (getKey['Z']) pressedEnter = true;
+		}
+		break;
+	case HISCORE:
+		break;
+	case GAME:
+		if (getKey[VK_LEFT] && !hitLeft)
+			x -= 5;
+		if (getKey[VK_RIGHT] && !hitRight)
+			x += 5;
+		if (getKey[VK_UP])
+			y -= 5;
+		if (getKey[VK_DOWN])
+			y += 5;
+		break;
+	case QUIT:
+		break;
+	default:
+		break;
+	}
+	
 }
+
+auto DefaultShow = [](Sprite* t) {
+	myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
+
+};
+
+auto DefaultUpdate = [](Sprite* t) {};
 
 class Rotatable :public Sprite {
 public:
@@ -171,6 +201,64 @@ void Block::Update() {
 	updateCallback(this);
 }
 
+void BlockShow(Block* t) {
+	if (t->rank > 0) {
+		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
+		//t->image = Block::img[t->rank][1];
+		DefaultShow(t);
+	}
 
-enum GameState { MENU, HISCORE, GAME, QUIT };
+}
+
+void BlockUpdate(Block *t) {
+	if (t->rank <= 0)t->del = true;
+}
+
+class Button :public Sprite {
+public:
+	Button(double _x, double _y, Bitmap &offImg, Bitmap &onImg,
+		void(*_showCallback)(Button*),
+		void(*_updateCallback)(Button*),
+		double _width = 30, double _height = 30, bool _is_on = false)
+		:Sprite() {
+		x = _x;
+		y = _y;
+		image = &offImg;
+		onImage = &onImg;
+		showCallback = _showCallback;
+		updateCallback = _updateCallback;
+		width = _width;
+		height = _height;
+		del = false;
+		is_on = _is_on;
+		time = gameTimer;
+		stop = false;
+		isActive = false;
+	}
+	bool is_on;
+	bool stop;
+	bool isActive;
+	unsigned long long time;
+	Bitmap* onImage;
+	void Show();
+	void Update();
+private:
+	void(*showCallback)(Button*);
+	void(*updateCallback)(Button*);
+};
+
+void Button::Show() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Show();
+	showCallback(this);
+}
+
+void Button::Update() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Update();
+	updateCallback(this);
+}
+
+
+
 #endif // BLOCK_H
