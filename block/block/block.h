@@ -1,3 +1,10 @@
+﻿/*					*\
+		block.h
+	游戏内对象相关定义
+	2020 wintercode
+	by id:191220017
+\*					*/
+
 #pragma once
 #ifndef BLOCK_H
 #define BLOCK_H
@@ -7,10 +14,11 @@ GFactory *myGFactory;
 enum GameState { MENU, HISCORE, GAME, QUIT };
 
 unsigned long long gameTimer = 0;
-float x = 100, y = 100;
+double x = 100, y = 100;
 bool hitLeft = false, hitRight = false;
 int menuButtonOn = 0;
 bool pressedEnter = false;
+bool isMenu = false;
 extern bool getKey[256];
 void keyboard(GameState state) {
 	switch (state)
@@ -21,7 +29,7 @@ void keyboard(GameState state) {
 				menuButtonOn = (menuButtonOn + 4) % 5;
 			if (getKey[VK_DOWN])
 				menuButtonOn = (menuButtonOn + 1) % 5;
-			if (getKey['Z']) pressedEnter = true;
+			if (getKey['Z'] && isMenu) pressedEnter = true;
 		}
 		break;
 	case HISCORE:
@@ -31,10 +39,12 @@ void keyboard(GameState state) {
 			x -= 5;
 		if (getKey[VK_RIGHT] && !hitRight)
 			x += 5;
+		/*
 		if (getKey[VK_UP])
 			y -= 5;
 		if (getKey[VK_DOWN])
 			y += 5;
+		*/
 		break;
 	case QUIT:
 		break;
@@ -258,6 +268,34 @@ void Button::Update() {
 		(*i)->Update();
 	updateCallback(this);
 }
+
+class GameString :public Object {
+public:
+	GameString(double _x, double _y, double _size) {
+		x = _x;
+		y = _y;
+		size = _size;
+		del = false;
+	}
+	
+	
+	std::string str;
+	double x, y;
+	double size;
+	static Bitmap charImg[200];	//just using ACSII
+
+	void Show() {
+		for (int i = 0; i < str.length(); i++) {
+			myGFactory->DrawBitmap(charImg[str[i]], x + i * (30 * size), y, x + (i + 1) * (30 * size), y + (37 * size));
+		}
+	}
+
+	void Update() {
+
+	}
+
+};
+Bitmap GameString::charImg[200];
 
 
 

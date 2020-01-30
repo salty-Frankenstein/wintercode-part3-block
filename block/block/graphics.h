@@ -1,7 +1,7 @@
-/*						*\
+ï»¿/*						*\
 		graphics.h
-	Ò»¸öÃÔÄãµÄÍ¼ĞÎ¿â
-	  ·â×°DirectX
+	ä¸€ä¸ªè¿·ä½ çš„å›¾å½¢åº“
+	  å°è£…DirectX
 	2020 wintercode
 	by id:191220017
 \*						*/
@@ -29,14 +29,14 @@ struct Point {
 };
 
 
-/* º¯Êı£ºstring ×ª»» LPCWSTR */
+/* å‡½æ•°ï¼šstring è½¬æ¢ LPCWSTR */
 LPCWSTR stringToLPCWSTR(std::string orig);
 
 
 /*
 	class Text
-ÎÄ×ÖµÄäÖÈ¾¡¢ÏÔÊ¾
-Ö§³Östd::stringºÍLPCWSTR
+æ–‡å­—çš„æ¸²æŸ“ã€æ˜¾ç¤º
+æ”¯æŒstd::stringå’ŒLPCWSTR
 */
 class Text {
 public:
@@ -52,10 +52,9 @@ private:
 
 };
 
-
 /*
 class Bitmap
-·â×°WICBitmap && D2DBitmap
+å°è£…WICBitmap && D2DBitmap
 */
 
 class Bitmap {
@@ -82,7 +81,7 @@ private:
 //////////
 /*
 class Brush
-·â×°ID2D1SolidColorBrush
+å°è£…ID2D1SolidColorBrush
 */
 
 class Brush {
@@ -98,17 +97,17 @@ private:
 ///////////
 /*
 class GFactory
-·â×°D2D initializer && ID2D1HwndRenderTarget
-¹¤³§Àà
-´´½¨graphics¿âÖĞÆäËûÀàµÄ¶ÔÏó
+å°è£…D2D initializer && ID2D1HwndRenderTarget
+å·¥å‚ç±»
+åˆ›å»ºgraphicsåº“ä¸­å…¶ä»–ç±»çš„å¯¹è±¡
 */
 
 class GFactory {	//as a d2d render target
 public:
 	GFactory(HWND& _hwndptr);
 
-	ID2D1HwndRenderTarget* GetHandle();		//½öÔÚ²âÊÔÊ±Ê¹ÓÃ
-	ID2D1Factory * GetFactory();			//½öÔÚ²âÊÔÊ±Ê¹ÓÃ
+	ID2D1HwndRenderTarget* GetHandle();		//ä»…åœ¨æµ‹è¯•æ—¶ä½¿ç”¨
+	ID2D1Factory * GetFactory();			//ä»…åœ¨æµ‹è¯•æ—¶ä½¿ç”¨
 	bool Create();
 	bool CreateBrush(Brush &brush, COLOR color);
 

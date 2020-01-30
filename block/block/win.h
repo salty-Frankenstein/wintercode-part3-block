@@ -1,6 +1,6 @@
-/*					*\
+﻿/*					*\
 		win.h
-	��װWindowsAPI
+	封装WindowsAPI
 	2020 wintercode
 	by id:191220017
 \*					*/

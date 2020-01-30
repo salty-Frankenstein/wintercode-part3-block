@@ -120,8 +120,10 @@
   <ItemGroup>
     <ClInclude Include="block.h" />
     <ClInclude Include="engine.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>

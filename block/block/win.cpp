@@ -1,4 +1,4 @@
-#include "win.h"
+ï»¿#include "win.h"
 
 Wnd::Wnd() {
 	height = 800;
@@ -65,7 +65,7 @@ int Wnd::Run() {
 			DispatchMessage(&msg);
 		}
 		else {
-			Display();	//´Ë´¦Îª»Øµ÷º¯Êı
+			Display();	//æ­¤å¤„ä¸ºå›è°ƒå‡½æ•°
 		}
 	}
 	return (int)msg.wParam;
@@ -78,8 +78,8 @@ HWND Wnd::GetHandle() {
 
 /*
 //Example main function:
-//DisplayºÍWndProcÔİÊ±²»Îª»Øµ÷º¯Êı£¬Ğë×Ô¼º¶¨Òå
-//»áĞŞ¸Ä
+//Displayå’ŒWndProcæš‚æ—¶ä¸ä¸ºå›è°ƒå‡½æ•°ï¼Œé¡»è‡ªå·±å®šä¹‰
+//ä¼šä¿®æ”¹
 
 bool FrWnd::Display() {
 keyboard();

@@ -1,4 +1,4 @@
-#include "graphics.h"
+ï»¿#include "graphics.h"
 
 /* point structure */
 Point::Point(float _x, float _y) {
@@ -6,7 +6,7 @@ Point::Point(float _x, float _y) {
 	y = _y;
 }
 
-/* º¯Êý£ºstring ×ª»» LPCWSTR */
+/* å‡½æ•°ï¼šstring è½¬æ¢ LPCWSTR */
 LPCWSTR stringToLPCWSTR(std::string orig) {
 	size_t origsize = orig.length() + 1;
 	const size_t newsize = 100;
@@ -213,7 +213,6 @@ bool GFactory::CreateBitmap(Bitmap &bmp) {
 	}
 	return true;
 }
-
 
 void GFactory::BeginDraw() {
 	hdl->BeginDraw();

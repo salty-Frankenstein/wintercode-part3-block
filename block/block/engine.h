@@ -1,6 +1,6 @@
-/*						*\
+ï»¿/*						*\
 		engine.h
-	Ò»¸öÃÔÄãµÄÓÎÏ·ÒıÇæ
+	ä¸€ä¸ªè¿·ä½ çš„æ¸¸æˆå¼•æ“
 	 2020 wintercode
 	 by id:191220017
 \*						*/
@@ -17,7 +17,7 @@ extern bool getKey[256];
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
-/* ½Ó¿ÚÀà£¬ËùÓĞÒıÇæÄÚ¶ÔÏó»ùÀà */
+/* æ¥å£ç±»ï¼Œæ‰€æœ‰å¼•æ“å†…å¯¹è±¡åŸºç±» */
 class Object {
 public:
 	virtual void Show() = 0;
@@ -58,10 +58,10 @@ protected:
 
 };
 
-#define INVISIBLE_IMG (nullptr)		//ÒşĞÎspriteµÄimage
-#define INVISIBLE_SHOW ([](Sprite* t) {})	//ÒşĞÎspriteµÄshowº¯Êı
+#define INVISIBLE_IMG (nullptr)		//éšå½¢spriteçš„image
+#define INVISIBLE_SHOW ([](Sprite* t) {})	//éšå½¢spriteçš„showå‡½æ•°
 
-/* ÓÎÏ·¶ÔÏó»º´æ */
+/* æ¸¸æˆå¯¹è±¡ç¼“å­˜ */
 class ObjectBuffer :public Object {
 public:
 	void Show();
@@ -71,4 +71,3 @@ public:
 
 
 #endif // ENGINE_H
-
