@@ -12,6 +12,7 @@
 #include "engine.h"
 GFactory *myGFactory;
 enum GameState { MENU, HISCORE, GAME, QUIT };
+enum GameProcess { GAME_LOAD, GAME_RESTART, GAME_PLAY, GAME_PAUSE, GAME_END };
 
 unsigned long long gameTimer = 0;
 double x = 100, y = 100;
@@ -19,6 +20,9 @@ bool hitLeft = false, hitRight = false;
 int menuButtonOn = 0;
 bool pressedEnter = false;
 bool isMenu = false;
+bool ballActive;
+GameProcess gameProcess;
+
 extern bool getKey[256];
 void keyboard(GameState state) {
 	switch (state)
@@ -35,10 +39,20 @@ void keyboard(GameState state) {
 	case HISCORE:
 		break;
 	case GAME:
-		if (getKey[VK_LEFT] && !hitLeft)
-			x -= 5;
-		if (getKey[VK_RIGHT] && !hitRight)
-			x += 5;
+		if (gameProcess == GAME_PLAY) {
+			if (getKey[VK_LEFT] && !hitLeft)
+				x -= 10;
+			if (getKey[VK_RIGHT] && !hitRight)
+				x += 10;
+			if (getKey[VK_SPACE])
+				ballActive = true;
+			if (getKey[VK_ESCAPE])
+				gameProcess = GAME_PAUSE;
+		}
+		else if (gameProcess == GAME_PAUSE) {
+			if (getKey[VK_SPACE])
+				gameProcess = GAME_PLAY;
+		}
 		/*
 		if (getKey[VK_UP])
 			y -= 5;
@@ -271,10 +285,11 @@ void Button::Update() {
 
 class GameString :public Object {
 public:
-	GameString(double _x, double _y, double _size) {
+	GameString(double _x, double _y, double _size, double _interval = 0) {
 		x = _x;
 		y = _y;
 		size = _size;
+		interval = _interval;
 		del = false;
 	}
 	
@@ -282,16 +297,23 @@ public:
 	std::string str;
 	double x, y;
 	double size;
+	double interval;
 	static Bitmap charImg[200];	//just using ACSII
 
 	void Show() {
 		for (int i = 0; i < str.length(); i++) {
-			myGFactory->DrawBitmap(charImg[str[i]], x + i * (30 * size), y, x + (i + 1) * (30 * size), y + (37 * size));
+			myGFactory->DrawBitmap(charImg[str[i]],
+				x + i * (30 * size) + i * interval, y, x + (i + 1) * (30 * size) + i * interval, y + (37 * size));
 		}
 	}
 
 	void Update() {
 
+	}
+
+	void SetNum(int x) {
+		str = std::to_string(x);
+		while (str.length() < 9)str = '0' + str;
 	}
 
 };

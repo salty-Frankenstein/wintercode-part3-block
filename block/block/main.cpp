@@ -14,14 +14,14 @@ extern GFactory *myGFactory = new GFactory(hwnd);
 void GameInit() {
 	LoadImages();
 	LoadMenuUI();
-	LoadObject();
+	LoadGame();
 }
 
-GameString *fpsStr = new GameString(540, 460, 0.48);
+GameString *fpsStr = new GameString(520, 460, 0.48);
 Timer sysTimer;
 void Init() {
 	sysTimer.SetTime();
-	fpsStr->str = "6000";
+	//fpsStr->str = "6000";
 	myGFactory->Create();
 	/*
 	myText.Create();
@@ -34,10 +34,10 @@ void Init() {
 extern GameState gameState;
 
 bool Display() {
-	
+
 	keyboard(gameState);
 	myGFactory->BeginDraw();
-	myGFactory->Clear(_COLOR(Gray));
+	
 	gameTimer++;
 	switch (gameState)
 	{
@@ -49,9 +49,13 @@ bool Display() {
 	case HISCORE:
 		break;
 	case GAME:
-		gamePool.Update();
-		gamePool.Show();
-
+		if (gameProcess != GAME_PAUSE) {
+			myGFactory->Clear(_COLOR(Gray));
+			gamePool.Update();
+			gamePool.Show();
+		}
+		
+		GameUpdate();
 		break;
 	case QUIT:
 		break;
@@ -81,7 +85,8 @@ bool Display() {
 		sysTimer.Update();
 		t = sysTimer.GetIntervalMilli();
 		sysTimer.SetTime();
-		fpsStr->str = std::to_string(int(6000000.0/t));
+		fpsStr->str = std::to_string(int(60000.0/t)) + '.' 
+			+ std::to_string(int(6000000.0 / t)%100) + "fps";
 	}
 	fpsStr->Show();
 

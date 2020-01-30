@@ -16,8 +16,7 @@ extern GFactory *myGFactory;
 extern bool keyDown;
 ObjectBuffer gamePool;	//游戏对象池
 GameState gameState = MENU;
-int hiScore = 0;
-int gameScore = 0;
+
 
 
 Bitmap buttonImg[5][2];
@@ -37,60 +36,64 @@ Bitmap indexImg(L"./src/char/index.png");
 
 Bitmap blockImg[5][6];
 
+void BmpInit(Bitmap &b) {
+	b.Create();
+	myGFactory->CreateBitmap(b);
+}
+
 void LoadImages() {
 	for (int i = 0; i <= 9; i++) {
 		std::string path;
 		path = "./src/char/" + std::to_string(i) + ".png";
 		GameString::charImg[i + '0'] = Bitmap(stringToLPCWSTR(path));
-		GameString::charImg[i + '0'].Create();
-		myGFactory->CreateBitmap(GameString::charImg[i + '0']);
+		BmpInit(GameString::charImg[i + '0']);
 	}
+
+	for (char i = 'a'; i <= 'z'; i++) {
+		std::string path;
+		path = std::string("./src/char/") + i + std::string(".png");
+		GameString::charImg[i] = Bitmap(stringToLPCWSTR(path));
+		BmpInit(GameString::charImg[i]);
+	}
+
+	GameString::charImg['*'] = Bitmap(L"./src/char/star1.png");
+	GameString::charImg['#'] = Bitmap(L"./src/char/star2.png");
+	GameString::charImg['.'] = Bitmap(L"./src/char/dot.png");
+	BmpInit(GameString::charImg['*']);
+	BmpInit(GameString::charImg['#']);
+	BmpInit(GameString::charImg['.']);
 
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 2; j++) {
 			std::string path;
 			path = "./src/button/" + std::to_string(i) + std::to_string(j) + ".png";
 			buttonImg[i][j] = Bitmap(stringToLPCWSTR(path));
-			buttonImg[i][j].Create();
-			myGFactory->CreateBitmap(buttonImg[i][j]);
+			BmpInit(buttonImg[i][j]);
 		}
 
-	titleImg.Create();
-	coverImg.Create();
-	reimuImg.Create();
-	pressImg.Create();
-	myGFactory->CreateBitmap(titleImg);
-	myGFactory->CreateBitmap(coverImg);
-	myGFactory->CreateBitmap(reimuImg);
-	myGFactory->CreateBitmap(pressImg);
+	BmpInit(titleImg);
+	BmpInit(coverImg);
+	BmpInit(reimuImg);
+	BmpInit(pressImg);
 
-	testImg.Create();
-	boardImg.Create();
-	bgImg.Create();
-	ballRedImg.Create();
-	ballBlueImg.Create();
-	ballPurpleImg.Create();
-	maskImg.Create();
-	indexImg.Create();
-
-	myGFactory->CreateBitmap(testImg);
-	myGFactory->CreateBitmap(boardImg);
-	myGFactory->CreateBitmap(bgImg);
-	myGFactory->CreateBitmap(ballRedImg);
-	myGFactory->CreateBitmap(ballBlueImg);
-	myGFactory->CreateBitmap(ballPurpleImg);
-	myGFactory->CreateBitmap(maskImg);
-	myGFactory->CreateBitmap(indexImg);
+	BmpInit(testImg);
+	BmpInit(boardImg);
+	BmpInit(bgImg);
+	BmpInit(ballRedImg);
+	BmpInit(ballBlueImg);
+	BmpInit(ballPurpleImg);
+	BmpInit(maskImg);
+	BmpInit(indexImg);
 
 	for (int i = 1; i <= 4; i++)
 		for (int j = 1; j <= 5; j++) {
 			std::string path;
 			path = "./src/block" + std::to_string(i * 10 + j) + ".png";
 			blockImg[i][j] = Bitmap(stringToLPCWSTR(path));
-			blockImg[i][j].Create();
-			myGFactory->CreateBitmap(blockImg[i][j]);
+			BmpInit(blockImg[i][j]);
 			Block::img[i][j] = &blockImg[i][j];
 		}
+
 }
 
 /*
