@@ -92,11 +92,13 @@ void MenuUI_Update() {
 			reimu->x -= 6 - gameTimer * 0.1;
 			title->y += 6 - gameTimer * 0.1;
 		}
-		if (gameTimer / 30 % 2) {
-			press->x += 0.5;
+		if (gameTimer / 60 % 2) {
+			//press->x += 0.5;
+			press->opacity += 0.015;
 		}
 		else {
-			press->x -= 0.5;
+			//press->x -= 0.5;
+			press->opacity -= 0.015;
 		}
 
 		if (gameTimer > 60 && keyDown) {

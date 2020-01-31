@@ -93,11 +93,14 @@ void LoadImages() {
 			BmpInit(blockImg[i][j]);
 			Block::img[i][j] = &blockImg[i][j];
 		}
-
+	for (int i = 1; i <= 5; i++)
+		Block::img[0][i] = &blockImg[1][i];
 }
 
-/*
+
 Brush blackBrush, blueBrush;
+
+/*
 Text myText, myTextW;
 Text scoreTxt;
 std::string textOut;

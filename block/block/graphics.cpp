@@ -144,6 +144,18 @@ ID2D1SolidColorBrush** Brush::GetBrushPtr() {
 }
 
 
+/* class Layer */
+Layer::Layer() { layerParameters = D2D1::LayerParameters(); }
+
+ID2D1Layer* Layer::GetLayer() {
+	return layer;
+}
+
+ID2D1Layer** Layer::GetLayerPtr() {
+	return &layer;
+}
+
+
 /* class GFactory */
 GFactory::GFactory(HWND& _hwndptr) {
 	hwndptr = &_hwndptr;
@@ -212,6 +224,24 @@ bool GFactory::CreateBitmap(Bitmap &bmp) {
 		return false;
 	}
 	return true;
+}
+
+bool GFactory::CreateLayer(Layer &layer) {
+	HRESULT hr;
+	hr = hdl->CreateLayer(NULL, layer.GetLayerPtr());
+	if (FAILED(hr)){
+		MessageBox(NULL, "Create layer failed!", "Error", 0);
+		return false;
+	}
+	return true;
+}
+
+void GFactory::PushLayer(Layer &layer) {
+	hdl->PushLayer(layer.layerParameters, layer.GetLayer());
+}
+
+void GFactory::PopLayer() {
+	hdl->PopLayer();
 }
 
 void GFactory::BeginDraw() {

@@ -11,6 +11,7 @@
 
 #include "engine.h"
 GFactory *myGFactory;
+Layer myLayer;
 enum GameState { MENU, HISCORE, GAME, QUIT };
 enum GameProcess { GAME_LOAD, GAME_RESTART, GAME_PLAY, GAME_PAUSE, GAME_END };
 
@@ -69,7 +70,15 @@ void keyboard(GameState state) {
 }
 
 auto DefaultShow = [](Sprite* t) {
-	myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
+	if (t->opacity < 0.99) {
+		myLayer.layerParameters.opacity = t->opacity;
+		myGFactory->PushLayer(myLayer);
+		myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
+		myGFactory->PopLayer();
+	}
+	else {
+		myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
+	}
 
 };
 
@@ -80,7 +89,7 @@ public:
 	Rotatable(double _x, double _y,
 		Bitmap& _image, void(*_showCallback)(Rotatable*),
 		void(*_updateCallback)(Rotatable*),
-		double _width,	double _height, double _angle = 0, double _velocity = 1) 
+		double _width,	double _height, double _opacity = 1, double _angle = 0, double _velocity = 1) 
 		:Sprite(){
 
 		x = _x;
@@ -90,6 +99,7 @@ public:
 		updateCallback = _updateCallback;
 		width = _width;
 		height = _height;
+		opacity = _opacity;
 		del = false;
 
 		angle = _angle;
@@ -189,7 +199,7 @@ public:
 	Block(double _x, double _y,
 		void(*_showCallback)(Block*),
 		void(*_updateCallback)(Block*),
-		int _rank, double _width = 30, double _height = 30)
+		int _rank, double _width = 30, double _height = 30, double _opacity = 1)
 		:Sprite() {
 		x = _x;
 		y = _y;
@@ -198,6 +208,7 @@ public:
 		updateCallback = _updateCallback;
 		width = _width;
 		height = _height;
+		opacity = _opacity;
 		del = false;
 		rank = _rank;
 	}
@@ -226,7 +237,7 @@ void Block::Update() {
 }
 
 void BlockShow(Block* t) {
-	if (t->rank > 0) {
+	if (t->rank >= 0) {
 		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
 		//t->image = Block::img[t->rank][1];
 		DefaultShow(t);
@@ -235,7 +246,11 @@ void BlockShow(Block* t) {
 }
 
 void BlockUpdate(Block *t) {
-	if (t->rank <= 0)t->del = true;
+	if (t->rank <= 0) {
+		t->opacity -= 0.05;
+		if (t->opacity < 0)
+			t->del = true;
+	}
 }
 
 class Button :public Sprite {
@@ -243,7 +258,7 @@ public:
 	Button(double _x, double _y, Bitmap &offImg, Bitmap &onImg,
 		void(*_showCallback)(Button*),
 		void(*_updateCallback)(Button*),
-		double _width = 30, double _height = 30, bool _is_on = false)
+		double _width = 30, double _height = 30, double _opacity = 1, bool _is_on = false)
 		:Sprite() {
 		x = _x;
 		y = _y;
@@ -253,6 +268,7 @@ public:
 		updateCallback = _updateCallback;
 		width = _width;
 		height = _height;
+		opacity = _opacity;
 		del = false;
 		is_on = _is_on;
 		time = gameTimer;

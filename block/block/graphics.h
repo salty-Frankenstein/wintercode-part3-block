@@ -93,6 +93,20 @@ private:
 	ID2D1SolidColorBrush* brush;
 };
 
+/*
+class Layer
+封装LD2D1Layer图层操作
+*/
+class Layer {
+public:
+	Layer();
+	ID2D1Layer * GetLayer();
+	ID2D1Layer ** GetLayerPtr();
+	D2D1_LAYER_PARAMETERS layerParameters;
+
+private:
+	ID2D1Layer * layer;
+};
 
 ///////////
 /*
@@ -112,6 +126,10 @@ public:
 	bool CreateBrush(Brush &brush, COLOR color);
 
 	bool CreateBitmap(Bitmap &bmp);
+
+	bool CreateLayer(Layer &layer);
+	void PushLayer(Layer &layer);
+	void PopLayer();
 
 	void BeginDraw();
 	bool EndDraw();

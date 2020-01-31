@@ -56,7 +56,7 @@ void BallUpdate(Rotatable* t) {
 
 	//hitting the block
 	for (auto i = blocks.begin(); i != blocks.end(); i++)
-		if (isHitCircle(t, (*i))) {
+		if ((*i)->rank > 0 && isHitCircle(t, (*i))) {
 			Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
 				- Vec2((*i)->x + 0.5*(*i)->width, (*i)->y + 0.5*(*i)->width));
 			Unitize(normal);

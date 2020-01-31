@@ -36,7 +36,8 @@ Sprite::Sprite(double _x, double _y,
 	Bitmap& _image, void(*_showCallback)(Sprite*),
 	void(*_updateCallback)(Sprite*),
 	double _width,
-	double _height){
+	double _height,
+	double _opacity){
 	x = _x;
 	y = _y;
 	image = &_image;
@@ -44,6 +45,7 @@ Sprite::Sprite(double _x, double _y,
 	updateCallback = _updateCallback;
 	width = _width;
 	height = _height;
+	opacity = _opacity;
 	del = false;
 }
 
@@ -51,7 +53,8 @@ Sprite::Sprite(double _x, double _y,
 	Bitmap* _image, void(*_showCallback)(Sprite*),
 	void(*_updateCallback)(Sprite*),
 	double _width,
-	double _height) {
+	double _height,
+	double _opacity) {
 	x = _x;
 	y = _y;
 	image = _image;
@@ -59,6 +62,7 @@ Sprite::Sprite(double _x, double _y,
 	updateCallback = _updateCallback;
 	width = _width;
 	height = _height;
+	opacity = _opacity;
 	del = false;
 }
 

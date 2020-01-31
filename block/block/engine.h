@@ -37,18 +37,21 @@ public:
 		Bitmap& _image, void(*showCallback)(Sprite*), 
 		void(*updateCallback)(Sprite*),
 		double width = 100.f,
-		double height = 100.f
+		double height = 100.f,
+		double opacity = 1
 	);
 	Sprite(double _x, double _y,
 		Bitmap* _image, void(*showCallback)(Sprite*),
 		void(*updateCallback)(Sprite*),
 		double width = 100.f,
-		double height = 100.f
+		double height = 100.f,
+		double opacity = 1
 	);
 	Sprite();
 	void Show();
 	void Update();
 	Bitmap* image;
+	double opacity;
 	double width, height;	//size
 	double x, y;	//position
 

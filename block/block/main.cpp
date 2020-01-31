@@ -10,6 +10,7 @@ Wnd *myWnd = new Wnd(655, 520-1, Display, _T("東方靈異伝～For WinterCode 2
 
 HWND hwnd;
 extern GFactory *myGFactory = new GFactory(hwnd);
+extern Layer myLayer;
 
 void GameInit() {
 	LoadImages();
@@ -23,12 +24,28 @@ void Init() {
 	sysTimer.SetTime();
 	//fpsStr->str = "6000";
 	myGFactory->Create();
+	myGFactory->CreateLayer(myLayer);
 	/*
 	myText.Create();
 	myTextW.Create();
-	myGFactory->CreateBrush(blackBrush, _COLOR(Black));
 	*/
+	myGFactory->CreateBrush(blackBrush, _COLOR(Black));
+	
 	GameInit();
+}
+
+void DrawEffect() {
+	static double opacity = 1;
+	if (gameTimer <= 100) {
+		opacity -= 0.01;
+	}
+	else opacity = 0;
+	myLayer.layerParameters.opacity = opacity;
+	//myLayer.layerParameters.opacityBrush = blackBrush.GetBrush();
+	myGFactory->PushLayer(myLayer);
+	myGFactory->FillRectangle(blackBrush, 0, 0, 640, 480);
+
+	myGFactory->PopLayer();
 }
 
 extern GameState gameState;
@@ -38,6 +55,7 @@ bool Display() {
 	keyboard(gameState);
 	myGFactory->BeginDraw();
 	
+
 	gameTimer++;
 	switch (gameState)
 	{
@@ -89,7 +107,8 @@ bool Display() {
 			+ std::to_string(int(6000000.0 / t)%100) + "fps";
 	}
 	fpsStr->Show();
-
+	//DrawEffect();
+	
 	return myGFactory->EndDraw();
 }
 
