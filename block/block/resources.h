@@ -15,7 +15,7 @@
 extern GFactory *myGFactory;
 extern bool keyDown;
 ObjectBuffer gamePool;	//游戏对象池
-GameState gameState = MENU;
+GameState gameState = LOAD;
 
 
 
@@ -105,5 +105,7 @@ Text myText, myTextW;
 Text scoreTxt;
 std::string textOut;
 */
+
+
 
 #endif // !RESOURCES_H

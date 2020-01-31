@@ -3,6 +3,8 @@
 #include "menu.h"
 #include "game.h"
 #include "timer.h"
+#include <thread>
+#include <mutex>
 
 bool Display();
 
@@ -12,17 +14,27 @@ HWND hwnd;
 extern GFactory *myGFactory = new GFactory(hwnd);
 extern Layer myLayer;
 
+std::mutex m;
+bool loadComplete = false;
 void GameInit() {
-	LoadImages();
-	LoadMenuUI();
-	LoadGame();
+	
+	static bool loaded = false;
+	if (!loaded) {
+		m.lock();
+		LoadImages();
+		LoadMenuUI();
+		LoadGame();
+		m.unlock();
+		loaded = true;
+	}
+	
+	loadComplete = true;
 }
 
 GameString *fpsStr = new GameString(520, 460, 0.48);
 Timer sysTimer;
 void Init() {
 	sysTimer.SetTime();
-	//fpsStr->str = "6000";
 	myGFactory->Create();
 	myGFactory->CreateLayer(myLayer);
 	/*
@@ -30,35 +42,55 @@ void Init() {
 	myTextW.Create();
 	*/
 	myGFactory->CreateBrush(blackBrush, _COLOR(Black));
+	//GameInit();
 	
-	GameInit();
-}
-
-void DrawEffect() {
-	static double opacity = 1;
-	if (gameTimer <= 100) {
-		opacity -= 0.01;
-	}
-	else opacity = 0;
-	myLayer.layerParameters.opacity = opacity;
-	//myLayer.layerParameters.opacityBrush = blackBrush.GetBrush();
-	myGFactory->PushLayer(myLayer);
-	myGFactory->FillRectangle(blackBrush, 0, 0, 640, 480);
-
-	myGFactory->PopLayer();
 }
 
 extern GameState gameState;
+
+
+std::thread* loadThread;
+Bitmap loadingImg(L"./src/loading.png");
+Bitmap shoujoImg(L"./src/shoujo.png");
+Sprite* shoujo = new Sprite(460, 420, shoujoImg, DefaultShow, DefaultUpdate, 211 * 0.8, 58 * 0.8);
+void LoadLoad() {
+	static bool loaded = false;
+	if (!loaded) {
+		BmpInit(loadingImg);
+		BmpInit(shoujoImg);
+		loadThread = new std::thread(GameInit);
+		loadThread->join();
+		loaded = true;
+	}
+}
+
+void LoadShow() {
+	myGFactory->DrawBitmap(loadingImg, 0, 0, 640, 480);
+	if (gameTimer / 60 % 2)
+		shoujo->opacity += 0.015;
+	else 
+		shoujo->opacity -= 0.015;
+	shoujo->Show();
+	if (loadComplete && gameTimer >= 60 * 3) {
+		gameState = MENU;
+		gameTimer = 0;
+	}
+}
 
 bool Display() {
 
 	keyboard(gameState);
 	myGFactory->BeginDraw();
-	
+	myGFactory->Clear(_COLOR(Black));
 
 	gameTimer++;
 	switch (gameState)
 	{
+	case LOAD:
+		LoadLoad();
+		LoadShow();
+
+		break;
 	case MENU:
 		menuUI_Pool.Update();
 		menuUI_Pool.Show();
@@ -80,6 +112,7 @@ bool Display() {
 	default:
 		break;
 	}
+	
 	/*
 	myTextW.SetRect(10.f + x, 10.f + y, 300.f + x, 150.f + y);
 
@@ -97,17 +130,20 @@ bool Display() {
 
 	
 	myGFactory->Write(myText, blackBrush, textOut);
-	*/	
-	static long long t;	//每60帧计算一次fps
-	if (gameTimer % 60 == 0) {
-		sysTimer.Update();
-		t = sysTimer.GetIntervalMilli();
-		sysTimer.SetTime();
-		fpsStr->str = std::to_string(int(60000.0/t)) + '.' 
-			+ std::to_string(int(6000000.0 / t)%100) + "fps";
+	*/
+	if (gameState != LOAD) {
+		static long long t;	//每60帧计算一次fps
+		if (gameTimer % 60 == 0) {
+			sysTimer.Update();
+			t = sysTimer.GetIntervalMilli();
+			sysTimer.SetTime();
+			fpsStr->str = std::to_string((60000.0 / t));
+			for (int i = 1; i <= 4; i++)
+				fpsStr->str.pop_back();
+			fpsStr->str += "fps";
+		}
+		fpsStr->Show();
 	}
-	fpsStr->Show();
-	//DrawEffect();
 	
 	return myGFactory->EndDraw();
 }

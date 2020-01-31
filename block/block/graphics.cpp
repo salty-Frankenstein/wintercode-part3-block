@@ -66,6 +66,7 @@ bool Bitmap::Create() {
 	pStream = NULL;
 	pConverter = NULL;
 	pScaler = NULL;
+	hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	hr = CoCreateInstance(
 		CLSID_WICImagingFactory,
 		NULL,

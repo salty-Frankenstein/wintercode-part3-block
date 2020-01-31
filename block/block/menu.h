@@ -15,6 +15,7 @@ Sprite *cover = new Sprite(0, 0, coverImg, DefaultShow, DefaultUpdate, 640, 480)
 Sprite *reimu = new Sprite(300, 0, reimuImg, DefaultShow, DefaultUpdate, 333, 457);
 Sprite *title = new Sprite(100, 0, titleImg, DefaultShow, DefaultUpdate, 335 * 1.25, 91 * 1.25);
 Sprite *press = new Sprite(200 + 15 * 0.5, 350, pressImg, DefaultShow, DefaultUpdate, 225, 27);
+
 ObjectBuffer menuUI_Pool;
 void LoadMenuUI() {
 	menuUI_Pool.AddSon(cover);
@@ -87,8 +88,13 @@ void MenuUI_Update() {
 	static bool pressed = false;
 	static bool loaded = false;
 	static unsigned long long pressTime = 0;
+	static double opacity = 0;
 	if (!isMenu) {	//title
 		if (gameTimer <= 60) {
+			reimu->opacity = opacity;
+			title->opacity = opacity;
+			//cover->opacity = opacity;
+			opacity += 1/60.0;
 			reimu->x -= 6 - gameTimer * 0.1;
 			title->y += 6 - gameTimer * 0.1;
 		}

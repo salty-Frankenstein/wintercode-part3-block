@@ -12,7 +12,7 @@
 #include "engine.h"
 GFactory *myGFactory;
 Layer myLayer;
-enum GameState { MENU, HISCORE, GAME, QUIT };
+enum GameState { LOAD, MENU, HISCORE, GAME, QUIT };
 enum GameProcess { GAME_LOAD, GAME_RESTART, GAME_PLAY, GAME_PAUSE, GAME_END };
 
 unsigned long long gameTimer = 0;
