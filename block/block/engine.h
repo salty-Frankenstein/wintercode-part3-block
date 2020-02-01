@@ -11,6 +11,7 @@
 
 #include "win.h"
 #include "graphics.h"
+#include "sound.h"
 #include <list>
 
 extern bool getKey[256];
@@ -69,6 +70,7 @@ class ObjectBuffer :public Object {
 public:
 	void Show();
 	void Update();
+	size_t Size();
 };
 
 

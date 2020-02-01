@@ -101,3 +101,7 @@ void ObjectBuffer::Update() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Update();
 }
+
+size_t ObjectBuffer::Size() {
+	return son.size();
+}

@@ -33,6 +33,7 @@ Bitmap ballBlueImg(L"./src/ballblue.png");
 Bitmap ballPurpleImg(L"./src/ballpurple.png");
 Bitmap maskImg(L"./src/mask.png");
 Bitmap indexImg(L"./src/char/index.png");
+Bitmap reimuBulImg(L"./src/reimubul.png");
 
 Bitmap blockImg[5][6];
 
@@ -84,6 +85,7 @@ void LoadImages() {
 	BmpInit(ballPurpleImg);
 	BmpInit(maskImg);
 	BmpInit(indexImg);
+	BmpInit(reimuBulImg);
 
 	for (int i = 1; i <= 4; i++)
 		for (int j = 1; j <= 5; j++) {
@@ -95,6 +97,24 @@ void LoadImages() {
 		}
 	for (int i = 1; i <= 5; i++)
 		Block::img[0][i] = &blockImg[1][i];
+}
+
+Sound titleBgm;
+Sound gameBgm;
+Sound okSE;
+Sound selectSE;
+Sound enepSE;
+Sound grazeSE;
+Sound pldeadSE;
+void LoadSound() {
+	titleBgm = Sound(L"./src/sound/bgm/menu.mp3");
+	gameBgm = Sound(L"./src/sound/bgm/bgm02.mp3");
+
+	okSE = Sound(L"./src/sound/se/se_ok00.wav");
+	selectSE = Sound(L"./src/sound/se/se_select00.wav");
+	enepSE = Sound(L"./src/sound/se/se_enep00.wav");
+	grazeSE = Sound(L"./src/sound/se/se_graze.wav");
+	pldeadSE = Sound(L"./src/sound/se/se_pldead00.wav");
 }
 
 

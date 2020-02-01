@@ -20,11 +20,12 @@ void GameInit() {
 	
 	static bool loaded = false;
 	if (!loaded) {
-		m.lock();
+		//m.lock();
 		LoadImages();
+		LoadSound();
 		LoadMenuUI();
 		LoadGame();
-		m.unlock();
+		//m.unlock();
 		loaded = true;
 	}
 	
@@ -71,11 +72,13 @@ void LoadShow() {
 	else 
 		shoujo->opacity -= 0.015;
 	shoujo->Show();
-	if (loadComplete && gameTimer >= 60 * 3) {
+	if (loadComplete// && gameTimer >= 60 * 3
+		) {
 		gameState = MENU;
 		gameTimer = 0;
 	}
 }
+
 
 bool Display() {
 
@@ -89,16 +92,20 @@ bool Display() {
 	case LOAD:
 		LoadLoad();
 		LoadShow();
-
+		
 		break;
 	case MENU:
+		MenuUI_Load();
 		menuUI_Pool.Update();
 		menuUI_Pool.Show();
 		MenuUI_Update();
+		
 		break;
 	case HISCORE:
 		break;
 	case GAME:
+		objNumStr->str = std::to_string(gamePool.Size());
+		GameLoad();
 		if (gameProcess != GAME_PAUSE) {
 			myGFactory->Clear(_COLOR(Gray));
 			gamePool.Update();

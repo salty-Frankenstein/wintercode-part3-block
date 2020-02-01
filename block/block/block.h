@@ -209,9 +209,11 @@ public:
 		width = _width;
 		height = _height;
 		opacity = _opacity;
+		sound = false;
 		del = false;
 		rank = _rank;
 	}
+	bool sound;
 	int rank;
 	static Bitmap* img[5][6];
 
@@ -234,23 +236,6 @@ void Block::Update() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Update();
 	updateCallback(this);
-}
-
-void BlockShow(Block* t) {
-	if (t->rank >= 0) {
-		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
-		//t->image = Block::img[t->rank][1];
-		DefaultShow(t);
-	}
-
-}
-
-void BlockUpdate(Block *t) {
-	if (t->rank <= 0) {
-		t->opacity -= 0.05;
-		if (t->opacity < 0)
-			t->del = true;
-	}
 }
 
 class Button :public Sprite {

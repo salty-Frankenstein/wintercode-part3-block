@@ -48,8 +48,14 @@ void BallUpdate(Rotatable* t) {
 		return;
 	}
 	//hitting the border
-	if (isHit(t, borderLeft) || isHit(t, borderRight))ballVelocity.x = -ballVelocity.x;
-	if (isHit(t, borderUp))ballVelocity.y = -ballVelocity.y;
+	if (isHit(t, borderLeft) || isHit(t, borderRight)) {
+		grazeSE.Play();
+		ballVelocity.x = -ballVelocity.x;
+	}
+	if (isHit(t, borderUp)) {
+		grazeSE.Play();
+		ballVelocity.y = -ballVelocity.y;
+	}
 	//if (isHit(t, borderDown) || isHit(t, borderUp))ballVelocity.y = -ballVelocity.y;
 	while (isHit(t, borderLeft))t->x += 1;
 	while (isHit(t, borderRight))t->x -= 1;
@@ -57,6 +63,7 @@ void BallUpdate(Rotatable* t) {
 	//hitting the block
 	for (auto i = blocks.begin(); i != blocks.end(); i++)
 		if ((*i)->rank > 0 && isHitCircle(t, (*i))) {
+			grazeSE.Play();
 			Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
 				- Vec2((*i)->x + 0.5*(*i)->width, (*i)->y + 0.5*(*i)->width));
 			Unitize(normal);
@@ -72,6 +79,7 @@ void BallUpdate(Rotatable* t) {
 
 	//hitting the board
 	if (isHitCircle(t, board)) {
+		grazeSE.Play();
 		Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
 			- Vec2(board->x + 0.5*board->width, board->y + 0.5*board->width));
 		Unitize(normal);
@@ -110,11 +118,41 @@ void BallShow(Rotatable* t) {
 }
 
 Rotatable *ball = new Rotatable(100, 400, ballRedImg, BallShow, BallUpdate, 20, 20);
+auto PlayerBulUpdate = [](Sprite* t) {
+	t->y -= 20;
+	if (t->y < 0)t->del = true;
+};
 
 void BoardUpdate(Sprite* t) {
 	hitLeft = isHit(t, borderLeft);
 	hitRight = isHit(t, borderRight);
 	t->x = x;
+
+	//shoot bullet
+	if (getKey['Z'] && gameTimer % 3 == 0) {
+		gamePool.AddSon(new Sprite(t->x+t->width*0.5,t->y,reimuBulImg,DefaultShow,PlayerBulUpdate,12,64,0.5));
+	}
+}
+
+void BlockShow(Block* t) {
+	if (t->rank >= 0) {
+		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
+		//t->image = Block::img[t->rank][1];
+		DefaultShow(t);
+	}
+
+}
+
+void BlockUpdate(Block *t) {
+	if (t->rank <= 0) {
+		if (!t->sound) {
+			enepSE.Play();
+			t->sound = true;
+		}
+		t->opacity -= 0.05;
+		if (t->opacity < 0)
+			t->del = true;
+	}
 }
 
 Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600);
@@ -124,6 +162,7 @@ GameString* hiScoreStr = new GameString(500, 30, 0.48);
 GameString* gameScoreStr = new GameString(500, 55, 0.48);
 GameString* gameLifeStr = new GameString(500, 102, 0.48, 5);
 GameString* gameBombStr = new GameString(500, 127, 0.48, 5);
+GameString* objNumStr = new GameString(0, 0, 0.48);
 
 void LoadGame() {
 
@@ -159,8 +198,18 @@ void LoadGame() {
 	gameLife = 3;
 	gameBomb = 4;
 	gameProcess = GAME_LOAD;
+
+	gamePool.AddSon(objNumStr);
 }
 
+void GameLoad() {
+	static bool loaded = false;
+	if (!loaded) {
+		titleBgm.Stop();
+		gameBgm.Play();
+	}
+	loaded = true;
+}
 
 GameString* paused = new GameString(100, 230, 0.8);
 
@@ -202,7 +251,8 @@ void GameUpdate() {
 			hiScore = gameScore;
 			hiScoreStr->SetNum(hiScore);
 		}
-		if (ball->y > 600) {
+		if (ball->y > 600 - 50) {
+			pldeadSE.Play();
 			gameLife--;
 			gameProcess = GAME_RESTART;
 		}

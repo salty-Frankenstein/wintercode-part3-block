@@ -81,6 +81,13 @@ void LoadMenuButton() {
 	}
 }
 
+void MenuUI_Load() {
+	static bool loaded = false;
+	if(!loaded)
+		titleBgm.Play();
+	loaded = true;
+}
+
 extern int menuButtonOn;
 extern bool pressedEnter;
 extern bool isMenu;
@@ -110,6 +117,7 @@ void MenuUI_Update() {
 		if (gameTimer > 60 && keyDown) {
 			pressed = true;
 			press->del = true;
+			okSE.Play();
 		}
 
 		if (!pressed) {
@@ -142,11 +150,14 @@ void MenuUI_Update() {
 	}
 	else {	//menu
 		for (int i = 0; i <= 4; i++) {
-			if (i == menuButtonOn)
+			if (i == menuButtonOn) {
+				if (!menuButtons[i]->is_on)selectSE.Play();
 				menuButtons[i]->is_on = 1;
+			}
 			else menuButtons[i]->is_on = 0;
 		}
 		if (pressedEnter) {
+			okSE.Play();
 			switch (menuButtonOn)
 			{
 			case 0:
