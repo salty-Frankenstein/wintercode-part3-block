@@ -82,6 +82,11 @@ void Sprite::Update() {
 
 
 /* class ObjectBuffer */
+ObjectBuffer::~ObjectBuffer() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		delete (*i);
+}
+
 void ObjectBuffer::Show() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Show();

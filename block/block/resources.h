@@ -20,20 +20,20 @@ GameState gameState = LOAD;
 
 
 Bitmap buttonImg[5][2];
-Bitmap titleImg(L"./src/menu/title.png");
-Bitmap coverImg(L"./src/menu/cover.png");
-Bitmap reimuImg(L"./src/menu/reimu.png");
-Bitmap pressImg(L"./src/menu/press.png");
+Bitmap titleImg;
+Bitmap coverImg;
+Bitmap reimuImg;
+Bitmap pressImg;
 
-Bitmap testImg(L"./src/enemy1.png");
-Bitmap boardImg(L"./src/reimu.png");
-Bitmap bgImg(L"./src/bg.png");
-Bitmap ballRedImg(L"./src/ballred.png");
-Bitmap ballBlueImg(L"./src/ballblue.png");
-Bitmap ballPurpleImg(L"./src/ballpurple.png");
-Bitmap maskImg(L"./src/mask.png");
-Bitmap indexImg(L"./src/char/index.png");
-Bitmap reimuBulImg(L"./src/reimubul.png");
+Bitmap testImg;
+Bitmap boardImg;
+Bitmap bgImg;
+Bitmap ballRedImg;
+Bitmap ballBlueImg;
+Bitmap ballPurpleImg;
+Bitmap maskImg;
+Bitmap indexImg;
+Bitmap reimuBulImg;
 
 Bitmap blockImg[5][6];
 
@@ -72,6 +72,21 @@ void LoadImages() {
 			BmpInit(buttonImg[i][j]);
 		}
 
+	titleImg = Bitmap(L"./src/menu/title.png");
+	coverImg = Bitmap(L"./src/menu/cover.png");
+	reimuImg = Bitmap(L"./src/menu/reimu.png");
+	pressImg = Bitmap(L"./src/menu/press.png");
+
+	testImg = Bitmap(L"./src/enemy1.png");
+	boardImg = Bitmap(L"./src/reimu.png");
+	bgImg = Bitmap(L"./src/bg.png");
+	ballRedImg = Bitmap(L"./src/ballred.png");
+	ballBlueImg = Bitmap(L"./src/ballblue.png");
+	ballPurpleImg = Bitmap(L"./src/ballpurple.png");
+	maskImg = Bitmap(L"./src/mask.png");
+	indexImg = Bitmap(L"./src/char/index.png");
+	reimuBulImg = Bitmap(L"./src/reimubul.png");
+
 	BmpInit(titleImg);
 	BmpInit(coverImg);
 	BmpInit(reimuImg);
@@ -99,22 +114,24 @@ void LoadImages() {
 		Block::img[0][i] = &blockImg[1][i];
 }
 
-Sound titleBgm;
-Sound gameBgm;
-Sound okSE;
-Sound selectSE;
-Sound enepSE;
-Sound grazeSE;
-Sound pldeadSE;
+Sound *titleBgm;
+Sound *gameBgm;
+Sound *okSE;
+Sound *selectSE;
+Sound *enepSE;
+Sound *grazeSE;
+Sound *pldeadSE;
+Sound *plstSE;
 void LoadSound() {
-	titleBgm = Sound(L"./src/sound/bgm/menu.mp3");
-	gameBgm = Sound(L"./src/sound/bgm/bgm02.mp3");
+	titleBgm = new Sound(L"./src/sound/bgm/menu.mp3");
+	gameBgm = new Sound(L"./src/sound/bgm/bgm02.mp3");
 
-	okSE = Sound(L"./src/sound/se/se_ok00.wav");
-	selectSE = Sound(L"./src/sound/se/se_select00.wav");
-	enepSE = Sound(L"./src/sound/se/se_enep00.wav");
-	grazeSE = Sound(L"./src/sound/se/se_graze.wav");
-	pldeadSE = Sound(L"./src/sound/se/se_pldead00.wav");
+	okSE = new Sound(L"./src/sound/se/se_ok00.wav");
+	selectSE = new Sound(L"./src/sound/se/se_select00.wav");
+	enepSE = new Sound(L"./src/sound/se/se_enep00.wav");
+	grazeSE = new Sound(L"./src/sound/se/se_graze.wav");
+	pldeadSE = new Sound(L"./src/sound/se/se_pldead00.wav");
+	plstSE = new Sound(L"./src/sound/se/se_plst00.wav");
 }
 
 

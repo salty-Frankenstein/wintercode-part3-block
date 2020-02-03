@@ -127,6 +127,7 @@
     <ClInclude Include="graphics.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="stage.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="win.h" />

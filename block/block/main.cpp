@@ -60,7 +60,7 @@ void LoadLoad() {
 		BmpInit(loadingImg);
 		BmpInit(shoujoImg);
 		loadThread = new std::thread(GameInit);
-		loadThread->join();
+		//loadThread->join();
 		loaded = true;
 	}
 }
@@ -72,7 +72,7 @@ void LoadShow() {
 	else 
 		shoujo->opacity -= 0.015;
 	shoujo->Show();
-	if (loadComplete// && gameTimer >= 60 * 3
+	if (loadComplete //&& gameTimer >= 60 * 4
 		) {
 		gameState = MENU;
 		gameTimer = 0;
@@ -99,20 +99,27 @@ bool Display() {
 		menuUI_Pool.Update();
 		menuUI_Pool.Show();
 		MenuUI_Update();
-		
+		break;
+	case SELECT:
+	//	OptionLoad();
+		gameState = GAME;
 		break;
 	case HISCORE:
 		break;
 	case GAME:
-		objNumStr->str = std::to_string(gamePool.Size());
+		//objNumStr->str = std::to_string(gamePool.Size());
+		objNumStr->str = std::to_string(stageNow->BlockNum());
 		GameLoad();
+		GameUpdate();
 		if (gameProcess != GAME_PAUSE) {
 			myGFactory->Clear(_COLOR(Gray));
+			stageNow->Update();
 			gamePool.Update();
+			
 			gamePool.Show();
+			stageNow->Show();
 		}
 		
-		GameUpdate();
 		break;
 	case QUIT:
 		break;

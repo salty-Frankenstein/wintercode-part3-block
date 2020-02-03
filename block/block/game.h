@@ -10,11 +10,13 @@
 #define GAME_H
 
 #include "resources.h"
+#include "stage.h"
 
 int hiScore = 0;
 int gameScore = 0;
 int gameLife;
 int gameBomb;
+
 extern bool ballActive;
 
 extern GameProcess gameProcess;
@@ -32,7 +34,8 @@ Sprite *borderUp = new Sprite(30, 15 - 100, boardImg, INVISIBLE_SHOW, DefaultUpd
 //Sprite *borderDown = new Sprite(30, 465, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 2);
 
 //Block *block1 = new Block(100, 50, BlockShow, BlockUpdate, 4, 100,100);
-std::list<Block*> blocks;
+//std::list<Block*> blocks;
+Stage *stageNow;
 
 double ballSpeed = 5;
 double tSpeed = -0.4;
@@ -49,21 +52,22 @@ void BallUpdate(Rotatable* t) {
 	}
 	//hitting the border
 	if (isHit(t, borderLeft) || isHit(t, borderRight)) {
-		grazeSE.Play();
+		grazeSE->Play();
 		ballVelocity.x = -ballVelocity.x;
 	}
 	if (isHit(t, borderUp)) {
-		grazeSE.Play();
+		grazeSE->Play();
 		ballVelocity.y = -ballVelocity.y;
 	}
 	//if (isHit(t, borderDown) || isHit(t, borderUp))ballVelocity.y = -ballVelocity.y;
 	while (isHit(t, borderLeft))t->x += 1;
 	while (isHit(t, borderRight))t->x -= 1;
+	while (isHit(t, borderUp))t->y += 1;
 
 	//hitting the block
-	for (auto i = blocks.begin(); i != blocks.end(); i++)
+	for (auto i = stageNow->GetBlocksBegin(); i != stageNow->GetBlocksEnd(); i++)
 		if ((*i)->rank > 0 && isHitCircle(t, (*i))) {
-			grazeSE.Play();
+			grazeSE->Play();
 			Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
 				- Vec2((*i)->x + 0.5*(*i)->width, (*i)->y + 0.5*(*i)->width));
 			Unitize(normal);
@@ -79,7 +83,7 @@ void BallUpdate(Rotatable* t) {
 
 	//hitting the board
 	if (isHitCircle(t, board)) {
-		grazeSE.Play();
+		grazeSE->Play();
 		Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
 			- Vec2(board->x + 0.5*board->width, board->y + 0.5*board->width));
 		Unitize(normal);
@@ -118,9 +122,18 @@ void BallShow(Rotatable* t) {
 }
 
 Rotatable *ball = new Rotatable(100, 400, ballRedImg, BallShow, BallUpdate, 20, 20);
+
 auto PlayerBulUpdate = [](Sprite* t) {
 	t->y -= 20;
 	if (t->y < 0)t->del = true;
+	if (isHitCircle(t, ball)) {
+		t->del = true;
+		double x = 2*((ball->x + ball->width*0.5) - (t->x + t->width * 0.5))/abs(ball->width + t->width);
+		ballVelocity = Vec2(x, -sqrt(1 - x * x));
+		while (isHitCircle(t, ball)) {
+			t->y -= 1;
+		}
+	}
 };
 
 void BoardUpdate(Sprite* t) {
@@ -129,31 +142,13 @@ void BoardUpdate(Sprite* t) {
 	t->x = x;
 
 	//shoot bullet
-	if (getKey['Z'] && gameTimer % 3 == 0) {
+	if (getKey['Z'] && gameTimer % 5 == 0 && ballActive) {
+		plstSE->Play();
 		gamePool.AddSon(new Sprite(t->x+t->width*0.5,t->y,reimuBulImg,DefaultShow,PlayerBulUpdate,12,64,0.5));
 	}
 }
 
-void BlockShow(Block* t) {
-	if (t->rank >= 0) {
-		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
-		//t->image = Block::img[t->rank][1];
-		DefaultShow(t);
-	}
 
-}
-
-void BlockUpdate(Block *t) {
-	if (t->rank <= 0) {
-		if (!t->sound) {
-			enepSE.Play();
-			t->sound = true;
-		}
-		t->opacity -= 0.05;
-		if (t->opacity < 0)
-			t->del = true;
-	}
-}
 
 Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600);
 Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5);
@@ -179,8 +174,8 @@ void LoadGame() {
 	//pool.AddSon(block1);
 
 
-	HRESULT t1 = myGFactory->GetHandle()->CreateBitmapBrush(ball->image->GetBitmap(), &ball->brush);
-	HRESULT t2 = myGFactory->GetFactory()->CreateRectangleGeometry(ball->rec1, &(ball->Grec));
+	//HRESULT t1 = myGFactory->GetHandle()->CreateBitmapBrush(ball->image->GetBitmap(), &ball->brush);
+	//HRESULT t2 = myGFactory->GetFactory()->CreateRectangleGeometry(ball->rec1, &(ball->Grec));
 	//if (SUCCEEDED(t1) && SUCCEEDED(t2))
 	gamePool.AddSon(ball);
 
@@ -200,13 +195,15 @@ void LoadGame() {
 	gameProcess = GAME_LOAD;
 
 	gamePool.AddSon(objNumStr);
+
+	stageNow = new Stage;
 }
 
 void GameLoad() {
 	static bool loaded = false;
 	if (!loaded) {
-		titleBgm.Stop();
-		gameBgm.Play();
+		titleBgm->Stop();
+		gameBgm->Play();
 	}
 	loaded = true;
 }
@@ -214,19 +211,16 @@ void GameLoad() {
 GameString* paused = new GameString(100, 230, 0.8);
 
 void GameUpdate() {
-	static std::ifstream in(L"./data/1.blk");
+	//static std::ifstream in(L"./data/1.blk");
+	static int stageNum = 0;
+	static std::string path = "./data/" + std::to_string(stageNum) + ".blk";
 	switch (gameProcess)
 	{
 	case GAME_LOAD:
-		int num;
-		in >> num;
-		for (int i = 1; i <= num; i++) {
-			float tx, ty;
-			int rank;
-			in >> tx >> ty >> rank;
-			blocks.push_back(new Block(tx, ty, BlockShow, BlockUpdate, rank));
-			gamePool.AddSon(blocks.back());
-		}
+		//stageNum = 1;
+		path = "./data/" + std::to_string(stageNum) + ".blk";
+		stageNow->Load(stringToLPCWSTR(path));
+		stageNum++;
 		gameProcess = GAME_RESTART;
 		break;
 	case GAME_RESTART:
@@ -251,10 +245,14 @@ void GameUpdate() {
 			hiScore = gameScore;
 			hiScoreStr->SetNum(hiScore);
 		}
-		if (ball->y > 600 - 50) {
-			pldeadSE.Play();
+		if (ball->y > 600 - 100) {
+			pldeadSE->Play();
 			gameLife--;
 			gameProcess = GAME_RESTART;
+		}
+		if (stageNow->IsOver()) {
+			gameProcess = GAME_LOAD;
+			ballActive = false;
 		}
 		break;
 	case GAME_PAUSE:

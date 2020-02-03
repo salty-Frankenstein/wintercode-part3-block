@@ -68,6 +68,7 @@ protected:
 /* 游戏对象缓存 */
 class ObjectBuffer :public Object {
 public:
+	~ObjectBuffer();
 	void Show();
 	void Update();
 	size_t Size();

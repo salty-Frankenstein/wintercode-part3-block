@@ -11,13 +11,17 @@
 
 #include "resources.h"
 
-Sprite *cover = new Sprite(0, 0, coverImg, DefaultShow, DefaultUpdate, 640, 480);
-Sprite *reimu = new Sprite(300, 0, reimuImg, DefaultShow, DefaultUpdate, 333, 457);
-Sprite *title = new Sprite(100, 0, titleImg, DefaultShow, DefaultUpdate, 335 * 1.25, 91 * 1.25);
-Sprite *press = new Sprite(200 + 15 * 0.5, 350, pressImg, DefaultShow, DefaultUpdate, 225, 27);
+Sprite *cover;
+Sprite *reimu;
+Sprite *title;
+Sprite *press;
 
 ObjectBuffer menuUI_Pool;
 void LoadMenuUI() {
+	cover = new Sprite(0, 0, coverImg, DefaultShow, DefaultUpdate, 640, 480);
+	reimu = new Sprite(300, 0, reimuImg, DefaultShow, DefaultUpdate, 333, 457);
+	title = new Sprite(100, 0, titleImg, DefaultShow, DefaultUpdate, 335 * 1.25, 91 * 1.25);
+	press = new Sprite(200 + 15 * 0.5, 350, pressImg, DefaultShow, DefaultUpdate, 225, 27);
 	menuUI_Pool.AddSon(cover);
 	menuUI_Pool.AddSon(reimu);
 	menuUI_Pool.AddSon(title);
@@ -77,6 +81,7 @@ void LoadMenuButton() {
 	menuButtons[B_OPTION] = new Button(450 + 300, 305, buttonImg[3][0], buttonImg[3][1], ButtonShow, ButtonUpdate, 89, 33);
 	menuButtons[B_QUIT] = new Button(450 + 300, 340, buttonImg[4][0], buttonImg[4][1], ButtonShow, ButtonUpdate, 53, 30);
 	for (int i = 0; i <= 4; i++) {
+		menuButtons[i]->opacity = 0.5;
 		menuUI_Pool.AddSon(menuButtons[i]);
 	}
 }
@@ -84,7 +89,7 @@ void LoadMenuButton() {
 void MenuUI_Load() {
 	static bool loaded = false;
 	if(!loaded)
-		titleBgm.Play();
+		titleBgm->Play();
 	loaded = true;
 }
 
@@ -117,7 +122,7 @@ void MenuUI_Update() {
 		if (gameTimer > 60 && keyDown) {
 			pressed = true;
 			press->del = true;
-			okSE.Play();
+			okSE->Play();
 		}
 
 		if (!pressed) {
@@ -151,19 +156,22 @@ void MenuUI_Update() {
 	else {	//menu
 		for (int i = 0; i <= 4; i++) {
 			if (i == menuButtonOn) {
-				if (!menuButtons[i]->is_on)selectSE.Play();
+				if (!menuButtons[i]->is_on)selectSE->Play();
 				menuButtons[i]->is_on = 1;
 			}
 			else menuButtons[i]->is_on = 0;
 		}
 		if (pressedEnter) {
-			okSE.Play();
-			switch (menuButtonOn)
+			okSE->Play();
+			switch (MenuButton(menuButtonOn))
 			{
-			case 0:
-				gameState = GAME;
+			case B_GAME_START:
+				gameState = SELECT;
 				break;
-			case 4:
+			case B_OPTION:
+
+				break;
+			case B_QUIT:
 				PostQuitMessage(0);
 				break;
 			default:

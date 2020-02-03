@@ -12,7 +12,7 @@
 #include "engine.h"
 GFactory *myGFactory;
 Layer myLayer;
-enum GameState { LOAD, MENU, HISCORE, GAME, QUIT };
+enum GameState { LOAD, MENU, SELECT, HISCORE, GAME, QUIT };
 enum GameProcess { GAME_LOAD, GAME_RESTART, GAME_PLAY, GAME_PAUSE, GAME_END };
 
 unsigned long long gameTimer = 0;
@@ -25,7 +25,7 @@ bool ballActive;
 GameProcess gameProcess;
 
 extern bool getKey[256];
-void keyboard(GameState state) {
+void keyboard(GameState &state) {
 	switch (state)
 	{
 	case MENU:
@@ -36,6 +36,8 @@ void keyboard(GameState state) {
 				menuButtonOn = (menuButtonOn + 1) % 5;
 			if (getKey['Z'] && isMenu) pressedEnter = true;
 		}
+		break;
+	case SELECT:
 		break;
 	case HISCORE:
 		break;
