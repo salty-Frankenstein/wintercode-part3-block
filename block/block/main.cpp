@@ -14,7 +14,7 @@ HWND hwnd;
 extern GFactory *myGFactory = new GFactory(hwnd);
 extern Layer myLayer;
 
-std::mutex m;
+//std::mutex m;
 bool loadComplete = false;
 void GameInit() {
 	
@@ -25,6 +25,10 @@ void GameInit() {
 		LoadSound();
 		LoadMenuUI();
 		LoadGame();
+		gamePool.Sort();
+		//FileInit();
+		myGameText = new GameText;
+		myGameText->Load(L"./data/s1.sc");
 		//m.unlock();
 		loaded = true;
 	}
@@ -32,16 +36,16 @@ void GameInit() {
 	loadComplete = true;
 }
 
-GameString *fpsStr = new GameString(520, 460, 0.48);
+GameString *fpsStr = new GameString(520, 460, 0.48, 5);
 Timer sysTimer;
 void Init() {
 	sysTimer.SetTime();
 	myGFactory->Create();
 	myGFactory->CreateLayer(myLayer);
-	/*
-	myText.Create();
-	myTextW.Create();
-	*/
+	
+	//myText.Create();
+	//myTextW.Create();
+	
 	myGFactory->CreateBrush(blackBrush, _COLOR(Black));
 	//GameInit();
 	
@@ -99,6 +103,7 @@ bool Display() {
 		menuUI_Pool.Update();
 		menuUI_Pool.Show();
 		MenuUI_Update();
+		
 		break;
 	case SELECT:
 	//	OptionLoad();
@@ -107,8 +112,8 @@ bool Display() {
 	case HISCORE:
 		break;
 	case GAME:
-		//objNumStr->str = std::to_string(gamePool.Size());
-		objNumStr->str = std::to_string(stageNow->BlockNum());
+		objNumStr->str = std::to_string(gamePool.Size());
+		//objNumStr->str = std::to_string(stageNow->BlockNum());
 		GameLoad();
 		GameUpdate();
 		if (gameProcess != GAME_PAUSE) {
@@ -119,7 +124,8 @@ bool Display() {
 			gamePool.Show();
 			stageNow->Show();
 		}
-		
+		if (getKey['Q']&&gameTimer%5==0)myGameText->Next();
+		myGameText->Show();
 		break;
 	case QUIT:
 		break;
@@ -129,7 +135,7 @@ bool Display() {
 	
 	/*
 	myTextW.SetRect(10.f + x, 10.f + y, 300.f + x, 150.f + y);
-
+	
 	myGFactory->WriteW(myTextW, blackBrush, L"今日もいい天気☆");
 	
 	textOut = "Position:\nx="
@@ -138,12 +144,14 @@ bool Display() {
 		+ std::to_string(int(50 + y))
 		+ "\ntime:"
 		+ std::to_string(gameTimer / 60)
+		+"\n"
 		//+ "\nisHit:"
 		//+ std::to_string(isHit(board, borderLeft) || isHit(board, borderRight))
 		;
 
-	
-	myGFactory->Write(myText, blackBrush, textOut);
+	//myGFactory->Write(myText, blackBrush, textOut);
+
+	myGFactory->WriteW(myText, blackBrush, t.c_str());
 	*/
 	if (gameState != LOAD) {
 		static long long t;	//每60帧计算一次fps

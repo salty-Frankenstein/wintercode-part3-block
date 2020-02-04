@@ -91,7 +91,8 @@ public:
 	Rotatable(double _x, double _y,
 		Bitmap& _image, void(*_showCallback)(Rotatable*),
 		void(*_updateCallback)(Rotatable*),
-		double _width,	double _height, double _opacity = 1, double _angle = 0, double _velocity = 1) 
+		double _width,	double _height,
+		int _layer = 1, double _opacity = 1, double _angle = 0, double _velocity = 1) 
 		:Sprite(){
 
 		x = _x;
@@ -102,6 +103,7 @@ public:
 		width = _width;
 		height = _height;
 		opacity = _opacity;
+		layer = _layer;
 		del = false;
 
 		angle = _angle;
@@ -201,7 +203,8 @@ public:
 	Block(double _x, double _y,
 		void(*_showCallback)(Block*),
 		void(*_updateCallback)(Block*),
-		int _rank, double _width = 30, double _height = 30, double _opacity = 1)
+		int _rank, double _width = 30, double _height = 30,
+		int _layer = 1, double _opacity = 1)
 		:Sprite() {
 		x = _x;
 		y = _y;
@@ -210,6 +213,7 @@ public:
 		updateCallback = _updateCallback;
 		width = _width;
 		height = _height;
+		layer = _layer;
 		opacity = _opacity;
 		sound = false;
 		del = false;
@@ -245,7 +249,8 @@ public:
 	Button(double _x, double _y, Bitmap &offImg, Bitmap &onImg,
 		void(*_showCallback)(Button*),
 		void(*_updateCallback)(Button*),
-		double _width = 30, double _height = 30, double _opacity = 1, bool _is_on = false)
+		double _width = 30, double _height = 30, 
+		int _layer = 1, double _opacity = 1, bool _is_on = false)
 		:Sprite() {
 		x = _x;
 		y = _y;
@@ -255,6 +260,7 @@ public:
 		updateCallback = _updateCallback;
 		width = _width;
 		height = _height;
+		layer = _layer;
 		opacity = _opacity;
 		del = false;
 		is_on = _is_on;
@@ -288,10 +294,11 @@ void Button::Update() {
 
 class GameString :public Object {
 public:
-	GameString(double _x, double _y, double _size, double _interval = 0) {
+	GameString(double _x, double _y, double _size,int _layer = 1, double _interval = 0) {
 		x = _x;
 		y = _y;
 		size = _size;
+		layer = _layer;
 		interval = _interval;
 		del = false;
 	}

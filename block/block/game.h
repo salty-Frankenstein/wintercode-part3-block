@@ -23,7 +23,7 @@ extern GameProcess gameProcess;
 
 void BallUpdate(Rotatable* t);
 void BoardUpdate(Sprite* t);
-Sprite *background = new Sprite(0, 0, bgImg, DefaultShow, [](Sprite* t) {}, 640, 480);
+Sprite *background = new Sprite(0, 0, bgImg, DefaultShow, [](Sprite* t) {}, 640, 480, 3);
 
 Sprite *board = new Sprite(400, 410, boardImg, DefaultShow, BoardUpdate, 640 / 6.0, 433 / 6.0);
 Sprite *test = new Sprite(0, 0, testImg, DefaultShow, [](Sprite* t) {t->x = x; t->y = y; }, 30, 30);
@@ -144,20 +144,21 @@ void BoardUpdate(Sprite* t) {
 	//shoot bullet
 	if (getKey['Z'] && gameTimer % 5 == 0 && ballActive) {
 		plstSE->Play();
-		gamePool.AddSon(new Sprite(t->x+t->width*0.5,t->y,reimuBulImg,DefaultShow,PlayerBulUpdate,12,64,0.5));
+		gamePool.AddSon(new Sprite(t->x + t->width*0.5, t->y, reimuBulImg, DefaultShow, PlayerBulUpdate, 12, 64, 1, 0.5));
+		gamePool.Sort();
 	}
 }
 
 
 
-Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600);
-Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5);
+Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600, 0);
+Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5, 4);
 
-GameString* hiScoreStr = new GameString(500, 30, 0.48);
-GameString* gameScoreStr = new GameString(500, 55, 0.48);
-GameString* gameLifeStr = new GameString(500, 102, 0.48, 5);
-GameString* gameBombStr = new GameString(500, 127, 0.48, 5);
-GameString* objNumStr = new GameString(0, 0, 0.48);
+GameString* hiScoreStr = new GameString(500, 30, 0.48, 5);
+GameString* gameScoreStr = new GameString(500, 55, 0.48, 5);
+GameString* gameLifeStr = new GameString(500, 102, 0.48, 5, 5);
+GameString* gameBombStr = new GameString(500, 127, 0.48, 5, 5);
+GameString* objNumStr = new GameString(0, 0, 0.48, 5);
 
 void LoadGame() {
 
@@ -208,7 +209,7 @@ void GameLoad() {
 	loaded = true;
 }
 
-GameString* paused = new GameString(100, 230, 0.8);
+GameString* paused = new GameString(100, 230, 0.8, 5);
 
 void GameUpdate() {
 	//static std::ifstream in(L"./data/1.blk");

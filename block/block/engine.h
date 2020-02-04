@@ -26,6 +26,7 @@ public:
 	std::list<Object*> GetSon();
 	void AddSon(Object* s);
 	bool del;
+	int layer;
 	std::list<Object*> son;
 
 };
@@ -39,16 +40,21 @@ public:
 		void(*updateCallback)(Sprite*),
 		double width = 100.f,
 		double height = 100.f,
+		int layer = 1,
 		double opacity = 1
 	);
+
 	Sprite(double _x, double _y,
 		Bitmap* _image, void(*showCallback)(Sprite*),
 		void(*updateCallback)(Sprite*),
 		double width = 100.f,
 		double height = 100.f,
+		int layer = 1,
 		double opacity = 1
 	);
+
 	Sprite();
+
 	void Show();
 	void Update();
 	Bitmap* image;
@@ -72,6 +78,7 @@ public:
 	void Show();
 	void Update();
 	size_t Size();
+	void Sort();
 };
 
 

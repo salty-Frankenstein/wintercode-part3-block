@@ -37,6 +37,7 @@ Sprite::Sprite(double _x, double _y,
 	void(*_updateCallback)(Sprite*),
 	double _width,
 	double _height,
+	int _layer,
 	double _opacity){
 	x = _x;
 	y = _y;
@@ -46,6 +47,7 @@ Sprite::Sprite(double _x, double _y,
 	width = _width;
 	height = _height;
 	opacity = _opacity;
+	layer = _layer;
 	del = false;
 }
 
@@ -54,6 +56,7 @@ Sprite::Sprite(double _x, double _y,
 	void(*_updateCallback)(Sprite*),
 	double _width,
 	double _height,
+	int _layer,
 	double _opacity) {
 	x = _x;
 	y = _y;
@@ -63,6 +66,7 @@ Sprite::Sprite(double _x, double _y,
 	width = _width;
 	height = _height;
 	opacity = _opacity;
+	layer = _layer;
 	del = false;
 }
 
@@ -109,4 +113,8 @@ void ObjectBuffer::Update() {
 
 size_t ObjectBuffer::Size() {
 	return son.size();
+}
+
+void ObjectBuffer::Sort() {
+	son.sort([](Object* x, Object* y) {return x->layer < y->layer; });
 }
