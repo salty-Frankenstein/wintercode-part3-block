@@ -81,6 +81,20 @@ void BallUpdate(Rotatable* t) {
 			break;
 		}
 
+	//hitting the boss
+	if (stageNow->boss != nullptr && isHitCircle(t, stageNow->boss)) {
+		grazeSE->Play();
+		Vec2 normal(Vec2(t->x + 0.5*t->width, t->y + 0.5*t->width)
+			- Vec2(stageNow->boss->x + 0.5*stageNow->boss->width, stageNow->boss->y + 0.5*stageNow->boss->width));
+		Unitize(normal);
+		ballVelocity = ballVelocity - 2 * (ballVelocity * normal) * normal;
+		while (isHitCircle(t, stageNow->boss)) {
+			t->x += normal.x;
+			t->y += normal.y;
+		}
+		stageNow->boss->HP_now -= 30;
+	}
+
 	//hitting the board
 	if (isHitCircle(t, board)) {
 		grazeSE->Play();
@@ -134,6 +148,12 @@ auto PlayerBulUpdate = [](Sprite* t) {
 			t->y -= 1;
 		}
 	}
+
+	//hitting the boss
+	if (stageNow->boss!=nullptr && isHitCircle(t, stageNow->boss)) {
+		t->del = true;
+		stageNow->boss->HP_now--;
+	}
 };
 
 void BoardUpdate(Sprite* t) {
@@ -164,7 +184,7 @@ void LoadGame() {
 
 
 	//pool.AddSon(test);
-	gamePool.AddSon(mask);
+	//gamePool.AddSon(mask);
 	gamePool.AddSon(board);
 
 	gamePool.AddSon(borderLeft);
@@ -212,16 +232,12 @@ void GameLoad() {
 GameString* paused = new GameString(100, 230, 0.8, 5);
 
 void GameUpdate() {
-	//static std::ifstream in(L"./data/1.blk");
-	static int stageNum = 0;
-	static std::string path = "./data/" + std::to_string(stageNum) + ".blk";
 	switch (gameProcess)
 	{
 	case GAME_LOAD:
-		//stageNum = 1;
-		path = "./data/" + std::to_string(stageNum) + ".blk";
-		stageNow->Load(stringToLPCWSTR(path));
-		stageNum++;
+
+		stageNow->Next();
+		stageNow->Load();
 		gameProcess = GAME_RESTART;
 		break;
 	case GAME_RESTART:

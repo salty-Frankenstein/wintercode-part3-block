@@ -4,7 +4,6 @@
 #include "game.h"
 #include "timer.h"
 #include <thread>
-#include <mutex>
 
 bool Display();
 
@@ -14,13 +13,11 @@ HWND hwnd;
 extern GFactory *myGFactory = new GFactory(hwnd);
 extern Layer myLayer;
 
-//std::mutex m;
 bool loadComplete = false;
 void GameInit() {
 	
 	static bool loaded = false;
 	if (!loaded) {
-		//m.lock();
 		LoadImages();
 		LoadSound();
 		LoadMenuUI();
@@ -29,7 +26,6 @@ void GameInit() {
 		//FileInit();
 		myGameText = new GameText;
 		myGameText->Load(L"./data/s1.sc");
-		//m.unlock();
 		loaded = true;
 	}
 	
@@ -120,12 +116,16 @@ bool Display() {
 			myGFactory->Clear(_COLOR(Gray));
 			stageNow->Update();
 			gamePool.Update();
-			
-			gamePool.Show();
+
 			stageNow->Show();
+			gamePool.Show();
+			
 		}
-		if (getKey['Q']&&gameTimer%5==0)myGameText->Next();
-		myGameText->Show();
+
+		if (getKey['Q']&&gameTimer%5==0)
+			myGameText->Next();
+		//myGameText->Show();
+
 		break;
 	case QUIT:
 		break;

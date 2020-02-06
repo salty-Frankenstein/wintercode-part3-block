@@ -37,6 +37,9 @@ Bitmap reimuBulImg;
 
 Bitmap blockImg[5][6];
 
+Bitmap mokouSImg;
+Bitmap mokouSCImg;
+
 void BmpInit(Bitmap &b) {
 	b.Create();
 	myGFactory->CreateBitmap(b);
@@ -87,6 +90,9 @@ void LoadImages() {
 	indexImg = Bitmap(L"./src/char/index.png");
 	reimuBulImg = Bitmap(L"./src/reimubul.png");
 
+	mokouSImg = Bitmap(L"./src/boss/mokouS.png");
+	mokouSCImg = Bitmap(L"./src/boss/mokouSC.png");
+
 	BmpInit(titleImg);
 	BmpInit(coverImg);
 	BmpInit(reimuImg);
@@ -102,6 +108,9 @@ void LoadImages() {
 	BmpInit(indexImg);
 	BmpInit(reimuBulImg);
 
+	BmpInit(mokouSImg);
+	BmpInit(mokouSCImg);
+
 	for (int i = 1; i <= 4; i++)
 		for (int j = 1; j <= 5; j++) {
 			std::string path;
@@ -112,6 +121,9 @@ void LoadImages() {
 		}
 	for (int i = 1; i <= 5; i++)
 		Block::img[0][i] = &blockImg[1][i];
+
+	Boss::HP_Img = Bitmap(L"./src/hp.png");
+	BmpInit(Boss::HP_Img);
 }
 
 Sound *titleBgm;

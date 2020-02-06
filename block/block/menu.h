@@ -26,6 +26,7 @@ void LoadMenuUI() {
 	menuUI_Pool.AddSon(reimu);
 	menuUI_Pool.AddSon(title);
 	menuUI_Pool.AddSon(press);
+	
 	/*
 	menuUI_Pool.AddSon(gameStart);
 	menuUI_Pool.AddSon(playerData);

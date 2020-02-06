@@ -244,6 +244,83 @@ void Block::Update() {
 	updateCallback(this);
 }
 
+
+class Boss :public Sprite {
+public:
+	Boss(double _x, double _y,
+		Bitmap& _image, void(*_showCallback)(Boss*),
+		void(*_updateCallback)(Boss*),
+		double _width, double _height,
+		int _HP_max, int _layer = 1, double _opacity = 1)
+		:Sprite() {
+		x = _x;
+		y = _y;
+		image = &_image;
+		showCallback = _showCallback;
+		updateCallback = _updateCallback;
+		width = _width;
+		height = _height;
+		HP_max = _HP_max;
+		HP_now = HP_max;
+		liveTime = 0;
+		opacity = _opacity;
+		layer = _layer;
+		del = false;
+		isDead = false;
+	}
+
+	bool IsDead() {
+		return isDead;
+	}
+
+	auto GetLiveTime() {
+		return liveTime;
+	}
+
+	void Show();
+	void Update();
+	
+	int HP_max;
+	int HP_now;
+	static Bitmap HP_Img;
+
+private:
+	void(*showCallback)(Boss*);
+	void(*updateCallback)(Boss*);
+	bool isDead;
+	unsigned long long liveTime;	//
+};
+
+Bitmap Boss::HP_Img;
+
+void Boss::Show() {
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Show();
+	showCallback(this);
+}
+
+void Boss::Update() {
+	liveTime++;
+	if (HP_now < 0)isDead = true;
+	for (auto i = son.begin(); i != son.end(); i++)
+		(*i)->Update();
+	updateCallback(this);
+}
+
+void BossShow(Boss* t) {
+	static double hp_x = 415;
+	DefaultShow(t);
+	if (hp_x > 415 * (1.0*t->HP_now / t->HP_max))
+		hp_x -= 0.2 * (hp_x - (hp_x + 415 * (1.0*t->HP_now / t->HP_max)) / 2);
+	myGFactory->DrawBitmap(t->HP_Img, 30, 15, hp_x, 20);
+}
+
+void BossUpdate(Boss* t) {
+	if (t->IsDead())
+		t->del = true;
+}
+
+
 class Button :public Sprite {
 public:
 	Button(double _x, double _y, Bitmap &offImg, Bitmap &onImg,

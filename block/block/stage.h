@@ -10,6 +10,8 @@
 
 #include "resources.h"
 
+Boss * mokou = new Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
+
 void BlockShow(Block* t) {
 	if (t->rank >= 0) {
 		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
@@ -28,15 +30,10 @@ void BlockUpdate(Block *t) {
 		if (t->opacity < 0)
 			t->del = true;
 	}
+	if (t->x < 0 || t->x > 420 || t->y < -10 || t->y > 470)
+		t->del = true;
 }
 
-
-std::wstring t;
-void FileInit() {
-	std::wifstream fin(L"./data/s1.sc");
-	fin.imbue(std::locale("chs"));
-	fin >> t;
-}
 
 class GameText {
 public:
@@ -124,9 +121,11 @@ private:
 
 GameText *myGameText;
 
+
 class Stage {
 public:
 	Stage() {
+		stageNum = 2;
 		poolPtr = nullptr;
 	}
 
@@ -134,20 +133,33 @@ public:
 		delete poolPtr;
 	}
 
-	void Load(LPCWSTR path) {
+	void Load() {
 		delete poolPtr;
 		poolPtr = new ObjectBuffer;
 		blocks.clear();
 
-		std::ifstream in(path);
-		int num;
-		in >> num;
-		for (int i = 1; i <= num; i++) {
-			float tx, ty;
-			int rank;
-			in >> tx >> ty >> rank;
-			blocks.push_back(new Block(tx, ty, BlockShow, BlockUpdate, rank));
-			poolPtr->AddSon(blocks.back());
+		
+		switch (stageNum)
+		{
+		case 3:	//妹红
+			boss = mokou;
+			poolPtr->AddSon(boss);
+			break;
+		default:
+			boss = nullptr;
+
+			std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+			std::ifstream in(path);
+			int num;
+			in >> num;
+			for (int i = 1; i <= num; i++) {
+				float tx, ty;
+				int rank;
+				in >> tx >> ty >> rank;
+				blocks.push_back(new Block(tx, ty, BlockShow, BlockUpdate, rank));
+				poolPtr->AddSon(blocks.back());
+			}
+			break;
 		}
 	}
 
@@ -161,25 +173,96 @@ public:
 	
 	void Show() {
 		poolPtr->Show();
+		myGFactory->DrawBitmap(mokouSCImg, 40, 20, 40+364, 20+18);
 	}
 
 	void Update() {
 		blocks.remove_if([](Object* x) {return x->del; });
 		poolPtr->Update();
+		switch (stageNum)
+		{
+		case 3:	//boss1 妹红
+			if (boss->GetLiveTime() % (60 * 3) == 10) {
+				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+				std::ifstream in(path);
+				int num;
+				in >> num;
+				for (int i = 1; i <= num; i++) {
+					float tx, ty;
+					int rank;
+					in >> tx >> ty >> rank;
+					blocks.push_back(new Block(boss->x + tx - 30 *3, boss->y + ty, BlockShow, BlockUpdate, rank));
+					poolPtr->AddSon(blocks.back());
+				}
+			}
+
+			if (boss->GetLiveTime() / 70 % 8 == 0) {
+				boss->x++;
+			}
+			else if (boss->GetLiveTime() / 70 % 8 == 4) {
+				boss->x--;
+			}
+			else if (boss->GetLiveTime() / 70 % 8 == 2) {
+				boss->x--;
+			}
+			else if (boss->GetLiveTime() / 70 % 8 == 6) {
+				boss->x++;
+			}
+
+			if (boss->GetLiveTime() / 42 % 8 == 0) {
+				boss->y++;
+			}
+			else if (boss->GetLiveTime() / 42 % 8 == 4) {
+				boss->y--;
+			}
+			else if (boss->GetLiveTime() / 42 % 8 == 2) {
+				boss->y--;
+			}
+			else if (boss->GetLiveTime() / 42 % 8 == 6) {
+				boss->y++;
+			}
+			
+
+			for (auto i = blocks.begin(); i != blocks.end(); i++) {
+				//(*i)->x++;
+				(*i)->y++;
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	bool IsOver() {
-		return blocks.size() == 0;
+		if(!IsBossStage())
+			return blocks.size() == 0;
+		return boss->IsDead();
 	}
 
 	int BlockNum() {
 		return blocks.size();
 	}
 
+	void Next() {
+		if(stageNum <= 3)
+			stageNum++;
+	}
+
+	bool IsGameOver() {
+		return stageNum == 4;
+	}
+
+	double x, y;	//渲染的开始坐标
+	Boss *boss;
+	
 private:
+	bool IsBossStage() {
+		return stageNum == 3;
+	}
+
 	ObjectBuffer* poolPtr;
 	std::list<Block*> blocks;
-	
+	int stageNum;
 };
 
 #endif // !STAGE_H
