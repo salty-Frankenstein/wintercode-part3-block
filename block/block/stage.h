@@ -10,8 +10,6 @@
 
 #include "resources.h"
 
-Boss * mokou = new Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
-
 void BlockShow(Block* t) {
 	if (t->rank >= 0) {
 		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
@@ -34,6 +32,29 @@ void BlockUpdate(Block *t) {
 		t->del = true;
 }
 
+void BossShow(Boss* t) {
+	static double hp_x = 415;
+	DefaultShow(t);
+	if (hp_x > 415 * (1.0*t->HP_now / t->HP_max))
+		hp_x -= 0.2 * (hp_x - (hp_x + 415 * (1.0*t->HP_now / t->HP_max)) / 2);
+	
+	myGFactory->DrawBitmap(t->HP_Img, 30, 15, 30 + hp_x, 20);
+}
+
+void BossUpdate(Boss* t) {
+	if (t->HP_now < 0) {
+		if (!t->sound) {
+			bossepSE->Play();
+			t->sound = true;
+		}
+		t->opacity -= 0.05;
+		
+	}
+	if (t->IsDead())
+		t->del = true;
+}
+
+Boss * mokou = new Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
 
 class GameText {
 public:
@@ -173,7 +194,7 @@ public:
 	
 	void Show() {
 		poolPtr->Show();
-		myGFactory->DrawBitmap(mokouSCImg, 40, 20, 40+364, 20+18);
+		myGFactory->DrawBitmap(mokouSCImg, 40, 30, 40+364, 30+18);
 	}
 
 	void Update() {
@@ -182,7 +203,9 @@ public:
 		switch (stageNum)
 		{
 		case 3:	//boss1 妹红
+			
 			if (boss->GetLiveTime() % (60 * 3) == 10) {
+				tanSE->Play();
 				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
 				std::ifstream in(path);
 				int num;

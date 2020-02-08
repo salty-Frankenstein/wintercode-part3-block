@@ -112,30 +112,15 @@ void BallUpdate(Rotatable* t) {
 
 	t->x += ballSpeed * ballVelocity.x;
 	t->y += ballSpeed * ballVelocity.y;
-	/*
-	t->brush->SetTransform(
-	D2D1::Matrix3x2F::Translation(x, y)*
-	D2D1::Matrix3x2F::Rotation(t->angle,
-	D2D1::Point2F((t->rec1.right + t->rec1.left) / 2 + x,
-	(t->rec1.top + t->rec1.bottom) / 2 + y)));
-	HRESULT	hr = myGFactory->GetFactory()->CreateTransformedGeometry(
-	t->Grec,
-	D2D1::Matrix3x2F::Translation(x, y)*
-	D2D1::Matrix3x2F::Rotation(t->angle,
-	D2D1::Point2F((t->rec1.right + t->rec1.left) / 2 + x,
-	(t->rec1.top + t->rec1.bottom) / 2 + y)),
-	//D2D1::Point2F(0, 0)),
-	&t->Grec2
-	);
-	*/
+	
 }
+
 
 void BallShow(Rotatable* t) {
-	myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
-	//pc0myGFactory->GetHandle()->FillGeometry(t->Grec, t->brush);
+	
 }
 
-Rotatable *ball = new Rotatable(100, 400, ballRedImg, BallShow, BallUpdate, 20, 20);
+Rotatable *ball = new Rotatable(100, 400, ballRedImg, BallShow, BallUpdate, 20, 20, 1, 1, 0, 15);
 
 auto PlayerBulUpdate = [](Sprite* t) {
 	t->y -= 20;
@@ -152,7 +137,7 @@ auto PlayerBulUpdate = [](Sprite* t) {
 	//hitting the boss
 	if (stageNow->boss!=nullptr && isHitCircle(t, stageNow->boss)) {
 		t->del = true;
-		stageNow->boss->HP_now--;
+		stageNow->boss->HP_now -= 2;
 	}
 };
 
@@ -171,7 +156,7 @@ void BoardUpdate(Sprite* t) {
 
 
 
-Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600, 0);
+//Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600, 0);
 Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5, 4);
 
 GameString* hiScoreStr = new GameString(500, 30, 0.48, 5);
@@ -194,12 +179,8 @@ void LoadGame() {
 
 	//pool.AddSon(block1);
 
-
-	//HRESULT t1 = myGFactory->GetHandle()->CreateBitmapBrush(ball->image->GetBitmap(), &ball->brush);
-	//HRESULT t2 = myGFactory->GetFactory()->CreateRectangleGeometry(ball->rec1, &(ball->Grec));
-	//if (SUCCEEDED(t1) && SUCCEEDED(t2))
+	
 	gamePool.AddSon(ball);
-
 	gamePool.AddSon(background);
 	gamePool.AddSon(index);
 

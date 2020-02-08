@@ -10,7 +10,9 @@
 #define BLOCK_H
 
 #include "engine.h"
-GFactory *myGFactory;
+GFactory *myGFactory; 
+D2D1::Matrix3x2F oriTransMat;
+
 Layer myLayer;
 enum GameState { LOAD, MENU, SELECT, HISCORE, GAME, QUIT };
 enum GameProcess { GAME_LOAD, GAME_RESTART, GAME_PLAY, GAME_PAUSE, GAME_END };
@@ -92,7 +94,7 @@ public:
 		Bitmap& _image, void(*_showCallback)(Rotatable*),
 		void(*_updateCallback)(Rotatable*),
 		double _width,	double _height,
-		int _layer = 1, double _opacity = 1, double _angle = 0, double _velocity = 1) 
+		int _layer = 1, double _opacity = 1, double _angle = 0, double _velocity = 0) 
 		:Sprite(){
 
 		x = _x;
@@ -108,25 +110,17 @@ public:
 
 		angle = _angle;
 		velocity = _velocity;
-		D2D1_SIZE_F size;
-		size.height = _height;
-		size.width = _width;
-		D2D_RECT_F rec1;
-		rec1.left = x;
-		rec1.top = y;
-		rec1.right = x + size.width;
-		rec1.bottom = y + size.height;
+		
 	}
 
 	void Show();
 	void Update();
 
 	ID2D1BitmapBrush * brush;
-
+	D2D1_SIZE_F imgSize;
 	D2D_RECT_F rec1;
 	ID2D1RectangleGeometry *Grec;
-	ID2D1TransformedGeometry *Grec2;
-	double angle;	//the angle with the x axis of rad
+	double angle;	//the angle with the x axis of degree
 	double velocity;
 
 private:
@@ -138,12 +132,38 @@ private:
 void Rotatable::Show() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Show();
+
+	imgSize = image->GetBitmap()->GetSize();
+	rec1.left = x;
+	rec1.top = y;
+	rec1.right = x + imgSize.width;
+	rec1.bottom = y + imgSize.height;
+
+	myGFactory->GetHandle()->CreateBitmapBrush(image->GetBitmap(), &brush);
+	myGFactory->GetFactory()->CreateRectangleGeometry(rec1, &Grec);
+
+	brush->SetTransform(D2D1::Matrix3x2F::Translation(x, y));
+
+	myGFactory->GetHandle()->SetTransform(
+		D2D1::Matrix3x2F::Rotation(angle,
+			D2D1::Point2F((rec1.right + rec1.left) / 2, (rec1.top + rec1.bottom) / 2))
+		*D2D1::Matrix3x2F::Scale(
+			D2D1::Size(width / imgSize.width, height / imgSize.height),
+			D2D1::Point2F(x, y))
+	);
+
+	myGFactory->GetHandle()->FillGeometry(Grec, brush);
+	myGFactory->GetHandle()->SetTransform(oriTransMat);
+
 	showCallback(this);
 }
 
 void Rotatable::Update() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Update();
+
+	angle += velocity;
+
 	updateCallback(this);
 }
 
@@ -265,8 +285,11 @@ public:
 		liveTime = 0;
 		opacity = _opacity;
 		layer = _layer;
+		sound = false;
 		del = false;
 		isDead = false;
+		mahoujin = new Rotatable(x, y, mahoujinImg,[](Rotatable *t) {},[](Rotatable *t) {}, 200, 200, 1, 1, 0, -1);
+		ring = new Rotatable(x, y, ringImg, [](Rotatable *t) {}, [](Rotatable *t) {}, 600, 600, 1, 1, 0, 1);
 	}
 
 	bool IsDead() {
@@ -280,9 +303,14 @@ public:
 	void Show();
 	void Update();
 	
+	bool sound;
 	int HP_max;
 	int HP_now;
 	static Bitmap HP_Img;
+	static Bitmap mahoujinImg;
+	static Bitmap ringImg;
+	Rotatable* mahoujin;
+	Rotatable* ring;
 
 private:
 	void(*showCallback)(Boss*);
@@ -292,32 +320,38 @@ private:
 };
 
 Bitmap Boss::HP_Img;
+Bitmap Boss::mahoujinImg;
+Bitmap Boss::ringImg;
 
 void Boss::Show() {
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Show();
+	
+	ring->Show();
+	mahoujin->Show();
 	showCallback(this);
 }
 
 void Boss::Update() {
 	liveTime++;
-	if (HP_now < 0)isDead = true;
+	if (HP_now < 0 && opacity < 0)isDead = true;
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Update();
+
+	mahoujin->Update();
+	mahoujin->x = x + width / 2 - mahoujin->width / 2;
+	mahoujin->y = y + height / 2 - mahoujin->width / 2;
+	ring->Update();
+
+	static double radius = 600;
+	if (radius > 600 * (1.0*HP_now / HP_max))
+		radius -= 1;
+	ring->width = radius;
+	ring->height = radius;
+	ring->x = x + width / 2 - ring->width / 2;
+	ring->y = y + height / 2 - ring->width / 2;
+
 	updateCallback(this);
-}
-
-void BossShow(Boss* t) {
-	static double hp_x = 415;
-	DefaultShow(t);
-	if (hp_x > 415 * (1.0*t->HP_now / t->HP_max))
-		hp_x -= 0.2 * (hp_x - (hp_x + 415 * (1.0*t->HP_now / t->HP_max)) / 2);
-	myGFactory->DrawBitmap(t->HP_Img, 30, 15, hp_x, 20);
-}
-
-void BossUpdate(Boss* t) {
-	if (t->IsDead())
-		t->del = true;
 }
 
 

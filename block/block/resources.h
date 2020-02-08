@@ -37,6 +37,7 @@ Bitmap reimuBulImg;
 
 Bitmap blockImg[5][6];
 
+
 Bitmap mokouSImg;
 Bitmap mokouSCImg;
 
@@ -85,6 +86,7 @@ void LoadImages() {
 	bgImg = Bitmap(L"./src/bg.png");
 	ballRedImg = Bitmap(L"./src/ballred.png");
 	ballBlueImg = Bitmap(L"./src/ballblue.png");
+	//ballBlueImg = Bitmap(L"./src/hp.png");
 	ballPurpleImg = Bitmap(L"./src/ballpurple.png");
 	maskImg = Bitmap(L"./src/mask.png");
 	indexImg = Bitmap(L"./src/char/index.png");
@@ -108,6 +110,7 @@ void LoadImages() {
 	BmpInit(indexImg);
 	BmpInit(reimuBulImg);
 
+	
 	BmpInit(mokouSImg);
 	BmpInit(mokouSCImg);
 
@@ -123,7 +126,11 @@ void LoadImages() {
 		Block::img[0][i] = &blockImg[1][i];
 
 	Boss::HP_Img = Bitmap(L"./src/hp.png");
+	Boss::mahoujinImg = Bitmap(L"./src/boss/mahoujin.png");
+	Boss::ringImg = Bitmap(L"./src/boss/ring.png");
 	BmpInit(Boss::HP_Img);
+	BmpInit(Boss::mahoujinImg);
+	BmpInit(Boss::ringImg);
 }
 
 Sound *titleBgm;
@@ -131,6 +138,8 @@ Sound *gameBgm;
 Sound *okSE;
 Sound *selectSE;
 Sound *enepSE;
+Sound *bossepSE;
+Sound *tanSE;
 Sound *grazeSE;
 Sound *pldeadSE;
 Sound *plstSE;
@@ -141,6 +150,8 @@ void LoadSound() {
 	okSE = new Sound(L"./src/sound/se/se_ok00.wav");
 	selectSE = new Sound(L"./src/sound/se/se_select00.wav");
 	enepSE = new Sound(L"./src/sound/se/se_enep00.wav");
+	bossepSE = new Sound(L"./src/sound/se/se_enep01.wav");
+	tanSE = new Sound(L"./src/sound/se/se_tan00.wav");
 	grazeSE = new Sound(L"./src/sound/se/se_graze.wav");
 	pldeadSE = new Sound(L"./src/sound/se/se_pldead00.wav");
 	plstSE = new Sound(L"./src/sound/se/se_plst00.wav");

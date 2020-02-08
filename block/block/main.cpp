@@ -38,7 +38,7 @@ void Init() {
 	sysTimer.SetTime();
 	myGFactory->Create();
 	myGFactory->CreateLayer(myLayer);
-	
+	myGFactory->GetHandle()->GetTransform(&oriTransMat);
 	//myText.Create();
 	//myTextW.Create();
 	
