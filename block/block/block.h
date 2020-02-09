@@ -24,6 +24,8 @@ int menuButtonOn = 0;
 bool pressedEnter = false;
 bool isMenu = false;
 bool ballActive;
+bool bombOn = false;
+bool bombHitted = false;
 GameProcess gameProcess;
 
 extern bool getKey[256];
@@ -152,7 +154,16 @@ void Rotatable::Show() {
 			D2D1::Point2F(x, y))
 	);
 
-	myGFactory->GetHandle()->FillGeometry(Grec, brush);
+	if (opacity < 0.99) {
+		myLayer.layerParameters.opacity = opacity;
+		myGFactory->PushLayer(myLayer);
+		myGFactory->GetHandle()->FillGeometry(Grec, brush);
+		myGFactory->PopLayer();
+	}
+	else {
+		myGFactory->GetHandle()->FillGeometry(Grec, brush);
+	}
+	
 	myGFactory->GetHandle()->SetTransform(oriTransMat);
 
 	showCallback(this);
@@ -288,8 +299,8 @@ public:
 		sound = false;
 		del = false;
 		isDead = false;
-		mahoujin = new Rotatable(x, y, mahoujinImg,[](Rotatable *t) {},[](Rotatable *t) {}, 200, 200, 1, 1, 0, -1);
-		ring = new Rotatable(x, y, ringImg, [](Rotatable *t) {}, [](Rotatable *t) {}, 600, 600, 1, 1, 0, 1);
+		mahoujin = new Rotatable(x, y, mahoujinImg,[](Rotatable *t) {},[](Rotatable *t) {}, 200, 200, 1, 0.6, 0, -3);
+		ring = new Rotatable(x, y, ringImg, [](Rotatable *t) {}, [](Rotatable *t) {}, 600, 600, 1, 0.6, 0, 1);
 	}
 
 	bool IsDead() {
@@ -440,6 +451,18 @@ public:
 };
 Bitmap GameString::charImg[200];
 
+class Particle :public Object {	//16 kinds 1~16
+public:
+	Particle() {
+		for (int i = 1; i <= 16; i++)
+			isTypeActive[i] = false;
+	}
+	static Bitmap particleImg[20];
+	bool isTypeActive[20];
+private:
+	ObjectBuffer pool;
+};
 
+Bitmap Particle::particleImg[20];
 
 #endif // BLOCK_H

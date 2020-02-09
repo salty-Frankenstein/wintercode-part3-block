@@ -11,6 +11,7 @@
 
 #include "resources.h"
 #include "stage.h"
+#include "background.h"
 
 int hiScore = 0;
 int gameScore = 0;
@@ -20,6 +21,12 @@ int gameBomb;
 extern bool ballActive;
 
 extern GameProcess gameProcess;
+
+GameString* hiScoreStr = new GameString(500, 30, 0.48, 5);
+GameString* gameScoreStr = new GameString(500, 55, 0.48, 5);
+GameString* gameLifeStr = new GameString(500, 102, 0.48, 5, 5);
+GameString* gameBombStr = new GameString(500, 127, 0.48, 5, 5);
+GameString* objNumStr = new GameString(0, 0, 0.48, 5);
 
 void BallUpdate(Rotatable* t);
 void BoardUpdate(Sprite* t);
@@ -78,6 +85,8 @@ void BallUpdate(Rotatable* t) {
 			}
 			(*i)->rank--;
 			gameScore += 1000;
+			if ((*i)->rank <= 0)gameScore += 2000;	//消灭额外得分
+			
 			break;
 		}
 
@@ -92,6 +101,7 @@ void BallUpdate(Rotatable* t) {
 			t->x += normal.x;
 			t->y += normal.y;
 		}
+		gameScore += 10000;
 		stageNow->boss->HP_now -= 30;
 	}
 
@@ -135,9 +145,33 @@ auto PlayerBulUpdate = [](Sprite* t) {
 	}
 
 	//hitting the boss
-	if (stageNow->boss!=nullptr && isHitCircle(t, stageNow->boss)) {
+	if (stageNow->boss!=nullptr && isHitCircle(t, stageNow->boss) && !bombOn) {
 		t->del = true;
-		stageNow->boss->HP_now -= 2;
+		gameScore += 10;
+		stageNow->boss->HP_now -= 1;
+	}
+};
+
+auto PlayerBombUpdate = [](Rotatable* t) {
+	ballVelocity.x = 0;
+	ballVelocity.y = -1;
+	t->y -= 5;
+	t->x -= 0.5;
+	t->width += 1;
+	t->height += 1;
+	if (!bombHitted && t->y < 100) {
+		for (auto i = stageNow->GetBlocksBegin(); i != stageNow->GetBlocksEnd(); i++) {
+			(*i)->rank--;
+			gameScore += 1000;
+			if ((*i)->rank <= 0)gameScore += 2000;	//消灭额外得分
+		}
+		if (stageNow->boss != nullptr)
+			stageNow->boss->HP_now -= 100;
+		bombHitted = true;
+	}
+	if (t->y < -500) {
+		t->del = true;
+		bombOn = false;
 	}
 };
 
@@ -149,7 +183,25 @@ void BoardUpdate(Sprite* t) {
 	//shoot bullet
 	if (getKey['Z'] && gameTimer % 5 == 0 && ballActive) {
 		plstSE->Play();
-		gamePool.AddSon(new Sprite(t->x + t->width*0.5, t->y, reimuBulImg, DefaultShow, PlayerBulUpdate, 12, 64, 1, 0.5));
+		gamePool.AddSon(
+			new Sprite(t->x + t->width*0.5 - 12*1.2*0.5, t->y, reimuBulImg, 
+				DefaultShow, PlayerBulUpdate, 12*1.2, 64*1.2, 1, 0.5)
+		);
+		gamePool.Sort();
+	}
+
+	//bomb
+	if (getKey['X'] && !bombOn && ballActive && gameBomb > 0) {
+		bombSE->Play();
+		bombOn = true;
+		bombHitted = false;
+		gameBomb--;
+		gameBombStr->str = "";
+		for (int i = 1; i <= gameBomb; i++)
+			gameBombStr->str += "#";
+		gamePool.AddSon(new Rotatable(130, 410, reimuBombImg, [](Rotatable* t) {}, PlayerBombUpdate, 200, 200, 2, 0.7, 0, 10));
+		gamePool.AddSon(new Rotatable(130+25, 410 + 100, reimuBombImg, [](Rotatable* t) {}, PlayerBombUpdate, 150, 150, 2, 0.6, 30, 8));
+		gamePool.AddSon(new Rotatable(130+50, 410 + 150, reimuBombImg, [](Rotatable* t) {}, PlayerBombUpdate, 100, 100, 2, 0.5, 60, 6));
 		gamePool.Sort();
 	}
 }
@@ -158,12 +210,6 @@ void BoardUpdate(Sprite* t) {
 
 //Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600, 0);
 Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5, 4);
-
-GameString* hiScoreStr = new GameString(500, 30, 0.48, 5);
-GameString* gameScoreStr = new GameString(500, 55, 0.48, 5);
-GameString* gameLifeStr = new GameString(500, 102, 0.48, 5, 5);
-GameString* gameBombStr = new GameString(500, 127, 0.48, 5, 5);
-GameString* objNumStr = new GameString(0, 0, 0.48, 5);
 
 void LoadGame() {
 
@@ -192,8 +238,8 @@ void LoadGame() {
 	in >> hiScore;
 	hiScoreStr->SetNum(hiScore);
 	gameScoreStr->SetNum(gameScore);
-	gameLife = 3;
-	gameBomb = 4;
+	gameLife = 2;
+	gameBomb = 3;
 	gameProcess = GAME_LOAD;
 
 	gamePool.AddSon(objNumStr);
@@ -211,7 +257,7 @@ void GameLoad() {
 }
 
 GameString* paused = new GameString(100, 230, 0.8, 5);
-
+Background myBackground;
 void GameUpdate() {
 	switch (gameProcess)
 	{
@@ -219,6 +265,7 @@ void GameUpdate() {
 
 		stageNow->Next();
 		stageNow->Load();
+		myBackground.Load(stageNow->GetStageNum());
 		gameProcess = GAME_RESTART;
 		break;
 	case GAME_RESTART:
@@ -226,7 +273,6 @@ void GameUpdate() {
 		ballActive = false;
 		ballVelocity.x = 0;
 		ballVelocity.y = -1;
-
 		gameLifeStr->str = "";
 		for (int i = 1; i <= gameLife; i++)
 			gameLifeStr->str += "*";
@@ -246,6 +292,7 @@ void GameUpdate() {
 		if (ball->y > 600 - 100) {
 			pldeadSE->Play();
 			gameLife--;
+			gameBomb = 3;
 			gameProcess = GAME_RESTART;
 		}
 		if (stageNow->IsOver()) {

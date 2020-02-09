@@ -140,31 +140,32 @@ private:
 	int num;				//文档总行数
 };
 
-GameText *myGameText;
-
 
 class Stage {
 public:
 	Stage() {
-		stageNum = 2;
+		stageNum = 0;
 		poolPtr = nullptr;
+		textPtr = new GameText;
 	}
 
 	~Stage() {
 		delete poolPtr;
+		delete textPtr;
 	}
 
 	void Load() {
 		delete poolPtr;
 		poolPtr = new ObjectBuffer;
 		blocks.clear();
-
 		
 		switch (stageNum)
 		{
 		case 3:	//妹红
 			boss = mokou;
 			poolPtr->AddSon(boss);
+			textPtr->Load(L"./data/s1.script");
+			textPtr->Next();
 			break;
 		default:
 			boss = nullptr;
@@ -203,7 +204,11 @@ public:
 		switch (stageNum)
 		{
 		case 3:	//boss1 妹红
-			
+			if (!textPtr->IsOver()) {
+				if (getKey['Z'] && gameTimer % 5 == 0)
+					textPtr->Next();
+				break;
+			}
 			if (boss->GetLiveTime() % (60 * 3) == 10) {
 				tanSE->Play();
 				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
@@ -275,9 +280,14 @@ public:
 		return stageNum == 4;
 	}
 
+	int GetStageNum() {
+		return stageNum;
+	}
+
 	double x, y;	//渲染的开始坐标
 	Boss *boss;
-	
+	GameText * textPtr;
+
 private:
 	bool IsBossStage() {
 		return stageNum == 3;

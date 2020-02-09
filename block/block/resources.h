@@ -31,15 +31,21 @@ Bitmap bgImg;
 Bitmap ballRedImg;
 Bitmap ballBlueImg;
 Bitmap ballPurpleImg;
-Bitmap maskImg;
+
 Bitmap indexImg;
 Bitmap reimuBulImg;
+Bitmap reimuBombImg;
 
 Bitmap blockImg[5][6];
 
 
 Bitmap mokouSImg;
 Bitmap mokouSCImg;
+
+Bitmap normalBG_Img;
+Bitmap mokouBG_Img;
+Bitmap mask0Img;
+Bitmap mask1Img;
 
 void BmpInit(Bitmap &b) {
 	b.Create();
@@ -86,14 +92,19 @@ void LoadImages() {
 	bgImg = Bitmap(L"./src/bg.png");
 	ballRedImg = Bitmap(L"./src/ballred.png");
 	ballBlueImg = Bitmap(L"./src/ballblue.png");
-	//ballBlueImg = Bitmap(L"./src/hp.png");
 	ballPurpleImg = Bitmap(L"./src/ballpurple.png");
-	maskImg = Bitmap(L"./src/mask.png");
+	
 	indexImg = Bitmap(L"./src/char/index.png");
 	reimuBulImg = Bitmap(L"./src/reimubul.png");
+	reimuBombImg = Bitmap(L"./src/boss/reimu/b1.png");
 
 	mokouSImg = Bitmap(L"./src/boss/mokouS.png");
 	mokouSCImg = Bitmap(L"./src/boss/mokouSC.png");
+
+	normalBG_Img = Bitmap(L"./src/background/bg.png");
+	mokouBG_Img = Bitmap(L"./src/background/mokou.png");
+	mask0Img = Bitmap(L"./src/background/mask0.png");
+	mask1Img = Bitmap(L"./src/background/mask1.png");
 
 	BmpInit(titleImg);
 	BmpInit(coverImg);
@@ -106,13 +117,18 @@ void LoadImages() {
 	BmpInit(ballRedImg);
 	BmpInit(ballBlueImg);
 	BmpInit(ballPurpleImg);
-	BmpInit(maskImg);
+	
 	BmpInit(indexImg);
 	BmpInit(reimuBulImg);
-
+	BmpInit(reimuBombImg);
 	
 	BmpInit(mokouSImg);
 	BmpInit(mokouSCImg);
+
+	BmpInit(normalBG_Img);
+	BmpInit(mokouBG_Img);
+	BmpInit(mask0Img);
+	BmpInit(mask1Img);
 
 	for (int i = 1; i <= 4; i++)
 		for (int j = 1; j <= 5; j++) {
@@ -143,6 +159,7 @@ Sound *tanSE;
 Sound *grazeSE;
 Sound *pldeadSE;
 Sound *plstSE;
+Sound *bombSE;
 void LoadSound() {
 	titleBgm = new Sound(L"./src/sound/bgm/menu.mp3");
 	gameBgm = new Sound(L"./src/sound/bgm/bgm02.mp3");
@@ -155,6 +172,7 @@ void LoadSound() {
 	grazeSE = new Sound(L"./src/sound/se/se_graze.wav");
 	pldeadSE = new Sound(L"./src/sound/se/se_pldead00.wav");
 	plstSE = new Sound(L"./src/sound/se/se_plst00.wav");
+	bombSE = new Sound(L"./src/sound/se/se_gun00.wav");
 }
 
 

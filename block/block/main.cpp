@@ -2,6 +2,7 @@
 #include "block.h"
 #include "menu.h"
 #include "game.h"
+#include "background.h"
 #include "timer.h"
 #include <thread>
 
@@ -24,8 +25,6 @@ void GameInit() {
 		LoadGame();
 		gamePool.Sort();
 		//FileInit();
-		myGameText = new GameText;
-		myGameText->Load(L"./data/s1.sc");
 		loaded = true;
 	}
 	
@@ -112,8 +111,9 @@ bool Display() {
 		//objNumStr->str = std::to_string(stageNow->BlockNum());
 		GameLoad();
 		GameUpdate();
+		myBackground.Show();
 		if (gameProcess != GAME_PAUSE) {
-			myGFactory->Clear(_COLOR(Gray));
+			//myGFactory->Clear(_COLOR(Gray));
 			stageNow->Update();
 			gamePool.Update();
 
@@ -121,10 +121,8 @@ bool Display() {
 			gamePool.Show();
 			
 		}
-
-		if (getKey['Q']&&gameTimer%5==0)
-			myGameText->Next();
-		//myGameText->Show();
+		if (!stageNow->textPtr->IsOver())
+			stageNow->textPtr->Show();
 
 		break;
 	case QUIT:
