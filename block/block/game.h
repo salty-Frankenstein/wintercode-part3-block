@@ -184,7 +184,7 @@ void BoardUpdate(Sprite* t) {
 	if (getKey['Z'] && gameTimer % 5 == 0 && ballActive) {
 		plstSE->Play();
 		gamePool.AddSon(
-			new Sprite(t->x + t->width*0.5 - 12*1.2*0.5, t->y, reimuBulImg, 
+			new Sprite(t->x + t->width*0.5, t->y, reimuBulImg, 
 				DefaultShow, PlayerBulUpdate, 12*1.2, 64*1.2, 1, 0.5)
 		);
 		gamePool.Sort();
@@ -239,7 +239,7 @@ void LoadGame() {
 	hiScoreStr->SetNum(hiScore);
 	gameScoreStr->SetNum(gameScore);
 	gameLife = 2;
-	gameBomb = 3;
+	gameBomb = 10;
 	gameProcess = GAME_LOAD;
 
 	gamePool.AddSon(objNumStr);
@@ -251,7 +251,7 @@ void GameLoad() {
 	static bool loaded = false;
 	if (!loaded) {
 		titleBgm->Stop();
-		gameBgm->Play();
+		//gameBgm->Play();
 	}
 	loaded = true;
 }

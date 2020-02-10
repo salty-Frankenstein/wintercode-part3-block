@@ -41,9 +41,13 @@ Bitmap blockImg[5][6];
 
 Bitmap mokouSImg;
 Bitmap mokouSCImg;
+Bitmap pachiSImg;
+Bitmap pachiSCImg;
 
 Bitmap normalBG_Img;
 Bitmap mokouBG_Img;
+Bitmap pachiBG_Img;
+Bitmap utsuhoBG_Img;
 Bitmap mask0Img;
 Bitmap mask1Img;
 
@@ -100,9 +104,13 @@ void LoadImages() {
 
 	mokouSImg = Bitmap(L"./src/boss/mokouS.png");
 	mokouSCImg = Bitmap(L"./src/boss/mokouSC.png");
+	pachiSImg = Bitmap(L"./src/boss/pachiS.png");
+	pachiSCImg = Bitmap(L"./src/boss/pachiSC.png");
 
 	normalBG_Img = Bitmap(L"./src/background/bg.png");
 	mokouBG_Img = Bitmap(L"./src/background/mokou.png");
+	pachiBG_Img = Bitmap(L"./src/background/pachi.png");
+	utsuhoBG_Img = Bitmap(L"./src/background/utsuho.png");
 	mask0Img = Bitmap(L"./src/background/mask0.png");
 	mask1Img = Bitmap(L"./src/background/mask1.png");
 
@@ -124,9 +132,13 @@ void LoadImages() {
 	
 	BmpInit(mokouSImg);
 	BmpInit(mokouSCImg);
+	BmpInit(pachiSImg);
+	BmpInit(pachiSCImg);
 
 	BmpInit(normalBG_Img);
 	BmpInit(mokouBG_Img);
+	BmpInit(pachiBG_Img);
+	BmpInit(utsuhoBG_Img);
 	BmpInit(mask0Img);
 	BmpInit(mask1Img);
 
@@ -150,7 +162,12 @@ void LoadImages() {
 }
 
 Sound *titleBgm;
-Sound *gameBgm;
+Sound *mokouMidBgm;
+Sound *mokouBgm;
+Sound *pachiMidBgm;
+Sound *pachiBgm;
+Sound *utsuhoMidBgm;
+Sound *utsuhoBgm;
 Sound *okSE;
 Sound *selectSE;
 Sound *enepSE;
@@ -162,7 +179,12 @@ Sound *plstSE;
 Sound *bombSE;
 void LoadSound() {
 	titleBgm = new Sound(L"./src/sound/bgm/menu.mp3");
-	gameBgm = new Sound(L"./src/sound/bgm/bgm02.mp3");
+	mokouMidBgm = new Sound(L"./src/sound/bgm/bgm01.mp3");
+	mokouBgm = new Sound(L"./src/sound/bgm/bgm02.mp3");
+	pachiMidBgm = new Sound(L"./src/sound/bgm/bgm03.mp3");
+	pachiBgm = new Sound(L"./src/sound/bgm/bgm04.mp3");
+	utsuhoMidBgm = new Sound(L"./src/sound/bgm/bgm05.mp3");
+	utsuhoBgm = new Sound(L"./src/sound/bgm/bgm06.mp3");
 
 	okSE = new Sound(L"./src/sound/se/se_ok00.wav");
 	selectSE = new Sound(L"./src/sound/se/se_select00.wav");

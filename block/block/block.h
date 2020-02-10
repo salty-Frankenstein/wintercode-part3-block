@@ -297,6 +297,7 @@ public:
 		opacity = _opacity;
 		layer = _layer;
 		sound = false;
+		setTime = false;
 		del = false;
 		isDead = false;
 		mahoujin = new Rotatable(x, y, mahoujinImg,[](Rotatable *t) {},[](Rotatable *t) {}, 200, 200, 1, 0.6, 0, -3);
@@ -311,10 +312,15 @@ public:
 		return liveTime;
 	}
 
+	void SetTime() {
+		setTime = true;
+	}
+
 	void Show();
 	void Update();
 	
 	bool sound;
+	bool setTime;
 	int HP_max;
 	int HP_now;
 	static Bitmap HP_Img;
@@ -344,7 +350,8 @@ void Boss::Show() {
 }
 
 void Boss::Update() {
-	liveTime++;
+	if(setTime)
+		liveTime++;
 	if (HP_now < 0 && opacity < 0)isDead = true;
 	for (auto i = son.begin(); i != son.end(); i++)
 		(*i)->Update();

@@ -107,8 +107,8 @@ bool Display() {
 	case HISCORE:
 		break;
 	case GAME:
-		objNumStr->str = std::to_string(gamePool.Size());
-		//objNumStr->str = std::to_string(stageNow->BlockNum());
+		//objNumStr->str = std::to_string(gamePool.Size());
+		objNumStr->str = std::to_string(stageNow->BlockNum());
 		GameLoad();
 		GameUpdate();
 		myBackground.Show();

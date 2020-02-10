@@ -55,6 +55,7 @@ void BossUpdate(Boss* t) {
 }
 
 Boss * mokou = new Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
+Boss * pachi = new Boss(200, 60, pachiSImg, BossShow, BossUpdate, 98 * 0.45, 202 * 0.45, 1500);
 
 class GameText {
 public:
@@ -68,7 +69,7 @@ public:
 
 		leftImg = new Bitmap(L"./src/boss/reimu/0.png");
 		BmpInit(*leftImg);
-		rightImg = new Bitmap(L"./src/boss/mokou/0.png");
+		rightImg = new Bitmap(L"./src/boss/pachi/0.png");
 		BmpInit(*rightImg);
 
 		left = nullptr;
@@ -83,8 +84,8 @@ public:
 		delete left;
 		left = new Sprite(30, 100, leftImg, DefaultShow, DefaultUpdate, 128 * 0.95, 256 * 0.95);
 		delete right;
-		right = new Sprite(200, 100, rightImg, DefaultShow, DefaultUpdate, 256 * 0.95, 256 * 0.95);
-
+		//right = new Sprite(200, 100, rightImg, DefaultShow, DefaultUpdate, 256 * 0.95, 256 * 0.95);
+		right = new Sprite(290, 100, rightImg, DefaultShow, DefaultUpdate, 128 * 0.95, 256 * 0.95);
 		delete fin;
 		fin = new std::wifstream(path);
 		fin->imbue(std::locale("chs"));
@@ -140,13 +141,51 @@ private:
 	int num;				//文档总行数
 };
 
+struct BlockSet {	//砖块对象的集合，用于整体操作
+	BlockSet(double _x, double _y) {
+		x = _x;
+		y = _y;
+	}
+
+	void AddBlock(Block* t) {
+		blockList.push_back(t);
+	}
+
+	void Translate(double dx, double dy) {
+		x += dx;
+		y += dy;
+		for (auto i = blockList.begin(); i != blockList.end(); i++) {
+			(*i)->x += dx;
+			(*i)->y += dy;
+		}
+	}
+
+	void Rotate(double angle) {
+		for (auto i = blockList.begin(); i != blockList.end(); i++) {
+			double tx = (*i)->x - x, ty = (*i)->y - y, ttx, tty;
+			ttx = tx * cos(angle) - ty * sin(angle);
+			tty = tx * sin(angle) + ty * cos(angle);
+			(*i)->x = ttx + x;
+			(*i)->y = tty + y;
+		}
+	}
+
+	bool IsDeleted() {
+		blockList.remove_if([](Object* x) {return x->del; });
+		return blockList.empty();
+	}
+
+	std::list<Block*> blockList;
+	double x, y;
+};
 
 class Stage {
 public:
 	Stage() {
-		stageNum = 0;
+		stageNum = 3;
 		poolPtr = nullptr;
 		textPtr = new GameText;
+		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);
 	}
 
 	~Stage() {
@@ -158,6 +197,7 @@ public:
 		delete poolPtr;
 		poolPtr = new ObjectBuffer;
 		blocks.clear();
+		blockSets.clear();
 		
 		switch (stageNum)
 		{
@@ -166,8 +206,19 @@ public:
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s1.script");
 			textPtr->Next();
+			spellCard->image = &mokouSCImg;
+			break;
+		case 6:	//姆Q
+			boss = pachi;
+			poolPtr->AddSon(boss);
+			textPtr->Load(L"./data/s2.script");
+			textPtr->Next();
+			spellCard->image = &pachiSCImg;
 			break;
 		default:
+			if (stageNum == 1)mokouMidBgm->Play();
+			else if (stageNum == 4) { mokouBgm->Stop(); pachiMidBgm->Play(); }
+			else if (stageNum == 7) { pachiBgm->Stop(); utsuhoMidBgm->Play(); }
 			boss = nullptr;
 
 			std::string path = "./data/" + std::to_string(stageNum) + ".blk";
@@ -195,20 +246,27 @@ public:
 	
 	void Show() {
 		poolPtr->Show();
-		myGFactory->DrawBitmap(mokouSCImg, 40, 30, 40+364, 30+18);
+		if (IsBossStage() && boss->setTime)spellCard->Show();
 	}
 
 	void Update() {
 		blocks.remove_if([](Object* x) {return x->del; });
+		blockSets.remove_if([](BlockSet& x) {return x.IsDeleted(); });
 		poolPtr->Update();
+		
 		switch (stageNum)
 		{
 		case 3:	//boss1 妹红
 			if (!textPtr->IsOver()) {
 				if (getKey['Z'] && gameTimer % 5 == 0)
 					textPtr->Next();
+				if (textPtr->IsOver()) {
+					mokouMidBgm->Stop();
+					mokouBgm->Play();
+				}
 				break;
 			}
+			boss->SetTime();
 			if (boss->GetLiveTime() % (60 * 3) == 10) {
 				tanSE->Play();
 				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
@@ -224,37 +282,65 @@ public:
 				}
 			}
 
-			if (boss->GetLiveTime() / 70 % 8 == 0) {
-				boss->x++;
-			}
-			else if (boss->GetLiveTime() / 70 % 8 == 4) {
-				boss->x--;
-			}
-			else if (boss->GetLiveTime() / 70 % 8 == 2) {
-				boss->x--;
-			}
-			else if (boss->GetLiveTime() / 70 % 8 == 6) {
-				boss->x++;
-			}
-
-			if (boss->GetLiveTime() / 42 % 8 == 0) {
-				boss->y++;
-			}
-			else if (boss->GetLiveTime() / 42 % 8 == 4) {
-				boss->y--;
-			}
-			else if (boss->GetLiveTime() / 42 % 8 == 2) {
-				boss->y--;
-			}
-			else if (boss->GetLiveTime() / 42 % 8 == 6) {
-				boss->y++;
-			}
-			
+			BossMove();
 
 			for (auto i = blocks.begin(); i != blocks.end(); i++) {
-				//(*i)->x++;
 				(*i)->y++;
 			}
+			break;
+		case 6:	//姆Q
+			if (!textPtr->IsOver()) {
+				if (getKey['Z'] && gameTimer % 5 == 0)
+					textPtr->Next();
+				if (textPtr->IsOver()) {
+					pachiMidBgm->Stop();
+					pachiBgm->Play();
+				}
+				break;
+			}
+			boss->SetTime();
+			int t;
+			t = boss->GetLiveTime() % (60 * 3);
+			if (t == 10 || t == 20 || t == 30) {
+				int dx, drank;
+				if (t == 10)dx = -70, drank = 0;
+				else if (t == 20)dx = 0, drank = 1;
+				else dx = 70, drank = 2;
+				tanSE->Play();
+				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+				std::ifstream in(path);
+				int num;
+				in >> num;
+				blockSets.push_back(BlockSet(boss->x + 10 + dx, boss->y + 100));
+				for (int i = 1; i <= num; i++) {
+					float tx, ty;
+					int rank;
+					in >> tx >> ty >> rank;
+					blocks.push_back(new Block(tx + (blockSets.back().x) - 100, ty + (blockSets.back().y - 100),
+						BlockShow, BlockUpdate, rank + drank));
+					blockSets.back().AddBlock(blocks.back());
+					poolPtr->AddSon(blocks.back());
+
+				}
+			}
+			
+			t = boss->GetLiveTime() / 20;
+			if (boss->GetLiveTime() % 20 == 0) {	//散弹
+				blocks.push_back(new Block(30 + t % 6 / 6.0*(415 - 30), 15, BlockShow, 
+					[](Block* t) {t->y += 1; BlockUpdate(t); }, t % 4 + 1));
+				poolPtr->AddSon(blocks.back());
+			}
+
+			BossMove();
+			for (auto i = blockSets.begin(); i != blockSets.end(); i++) {
+				if((*i).blockList.front()->rank==1)
+					(*i).Translate(-1.5, 1.5);
+				else if ((*i).blockList.front()->rank == 3)
+					(*i).Translate(1.5, 1.5);
+				else (*i).Translate(0, 1.5);
+				(*i).Rotate(6.0/180);
+			}
+			
 			break;
 		default:
 			break;
@@ -272,12 +358,12 @@ public:
 	}
 
 	void Next() {
-		if(stageNum <= 3)
+		if(stageNum <= 9)
 			stageNum++;
 	}
 
 	bool IsGameOver() {
-		return stageNum == 4;
+		return stageNum == 10;
 	}
 
 	int GetStageNum() {
@@ -289,12 +375,42 @@ public:
 	GameText * textPtr;
 
 private:
+	void BossMove() {
+		if (boss->GetLiveTime() / 70 % 8 == 0) {
+			boss->x++;
+		}
+		else if (boss->GetLiveTime() / 70 % 8 == 4) {
+			boss->x--;
+		}
+		else if (boss->GetLiveTime() / 70 % 8 == 2) {
+			boss->x--;
+		}
+		else if (boss->GetLiveTime() / 70 % 8 == 6) {
+			boss->x++;
+		}
+
+		if (boss->GetLiveTime() / 42 % 8 == 0) {
+			boss->y++;
+		}
+		else if (boss->GetLiveTime() / 42 % 8 == 4) {
+			boss->y--;
+		}
+		else if (boss->GetLiveTime() / 42 % 8 == 2) {
+			boss->y--;
+		}
+		else if (boss->GetLiveTime() / 42 % 8 == 6) {
+			boss->y++;
+		}
+	}
+
 	bool IsBossStage() {
-		return stageNum == 3;
+		return stageNum == 3 || stageNum == 6 || stageNum == 9;
 	}
 
 	ObjectBuffer* poolPtr;
 	std::list<Block*> blocks;
+	std::list<BlockSet> blockSets;
+	Sprite * spellCard;
 	int stageNum;
 };
 

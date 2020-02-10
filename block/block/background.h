@@ -25,7 +25,14 @@ public:
 			background = new Sprite(0, 0, mokouBG_Img, DefaultShow, DefaultUpdate, 640, 480);
 			mask = new Rotatable(-50, -50, mask0Img, [](Rotatable* t) {}, [](Rotatable* t) {}, 600, 600, 1, 1, 0, 0.5);
 			break;
-
+		case 6:
+			background = new Sprite(0, 0, pachiBG_Img, DefaultShow, DefaultUpdate, 640, 480);
+			mask = new Rotatable(-50, -50, mask0Img, [](Rotatable* t) {}, [](Rotatable* t) {}, 600, 600, 1, 1, 0, 0.5);
+			break;
+		case 9:
+			background = new Sprite(0, 0, utsuhoBG_Img, DefaultShow, DefaultUpdate, 640, 480);
+			mask = new Rotatable(-50, -50, mask0Img, [](Rotatable* t) {}, [](Rotatable* t) {}, 600, 600, 1, 1, 0, 0.5);
+			break;
 		default:
 			background = new Sprite(0, 0, normalBG_Img, DefaultShow, DefaultUpdate, 640, 480);
 			auto maskShow = [](Sprite* t) {
