@@ -47,10 +47,6 @@ void keyboard(GameState &state) {
 		break;
 	case GAME:
 		if (gameProcess == GAME_PLAY) {
-			if (getKey[VK_LEFT] && !hitLeft)
-				x -= 10;
-			if (getKey[VK_RIGHT] && !hitRight)
-				x += 10;
 			if (getKey[VK_SPACE])
 				ballActive = true;
 			if (getKey[VK_ESCAPE])

@@ -178,14 +178,18 @@ auto PlayerBombUpdate = [](Rotatable* t) {
 void BoardUpdate(Sprite* t) {
 	hitLeft = isHit(t, borderLeft);
 	hitRight = isHit(t, borderRight);
-	t->x = x;
+	//t->x = x;
 
 	//shoot bullet
 	if (getKey['Z'] && gameTimer % 5 == 0 && ballActive) {
 		plstSE->Play();
 		gamePool.AddSon(
-			new Sprite(t->x + t->width*0.5, t->y, reimuBulImg, 
+			new Sprite(t->x + t->width*0.5 - 12 * 1.2 * 0.5 + 10, t->y, reimuBulImg,
 				DefaultShow, PlayerBulUpdate, 12*1.2, 64*1.2, 1, 0.5)
+		);
+		gamePool.AddSon(
+			new Sprite(t->x + t->width*0.5 - 12 * 1.2 * 0.5 - 10, t->y, reimuBulImg,
+				DefaultShow, PlayerBulUpdate, 12 * 1.2, 64 * 1.2, 1, 0.5)
 		);
 		gamePool.Sort();
 	}
@@ -203,6 +207,15 @@ void BoardUpdate(Sprite* t) {
 		gamePool.AddSon(new Rotatable(130+25, 410 + 100, reimuBombImg, [](Rotatable* t) {}, PlayerBombUpdate, 150, 150, 2, 0.6, 30, 8));
 		gamePool.AddSon(new Rotatable(130+50, 410 + 150, reimuBombImg, [](Rotatable* t) {}, PlayerBombUpdate, 100, 100, 2, 0.5, 60, 6));
 		gamePool.Sort();
+	}
+
+	if (getKey[VK_LEFT] && !hitLeft)
+		t->x -= 10;
+	if (getKey[VK_RIGHT] && !hitRight)
+		t->x += 10;
+	if (stageNow->GetStageNum() == 9 && stageNow->boss->HP_now < stageNow->boss->HP_max * 0.5) {
+		if (t->x > stageNow->boss->x) t->x -= 2;
+		else t->x += 2;
 	}
 }
 

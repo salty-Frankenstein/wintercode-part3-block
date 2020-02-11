@@ -28,15 +28,15 @@ void BlockUpdate(Block *t) {
 		if (t->opacity < 0)
 			t->del = true;
 	}
-	if (t->x < 0 || t->x > 420 || t->y < -10 || t->y > 470)
+	if (t->x < 0 || t->x > 500 || t->y < -10 || t->y > 470)
 		t->del = true;
 }
 
 void BossShow(Boss* t) {
-	static double hp_x = 415;
+	static double hp_x = 390;
 	DefaultShow(t);
-	if (hp_x > 415 * (1.0*t->HP_now / t->HP_max))
-		hp_x -= 0.2 * (hp_x - (hp_x + 415 * (1.0*t->HP_now / t->HP_max)) / 2);
+	if (hp_x > 390 * (1.0*t->HP_now / t->HP_max))
+		hp_x -= 0.2 * (hp_x - (hp_x + 390 * (1.0*t->HP_now / t->HP_max)) / 2);
 	
 	myGFactory->DrawBitmap(t->HP_Img, 30, 15, 30 + hp_x, 20);
 }
@@ -56,6 +56,7 @@ void BossUpdate(Boss* t) {
 
 Boss * mokou = new Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
 Boss * pachi = new Boss(200, 60, pachiSImg, BossShow, BossUpdate, 98 * 0.45, 202 * 0.45, 1500);
+Boss * utsuho = new Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 120 * 0.8, 2500);
 
 class GameText {
 public:
@@ -182,7 +183,7 @@ struct BlockSet {	//砖块对象的集合，用于整体操作
 class Stage {
 public:
 	Stage() {
-		stageNum = 3;
+		stageNum = 8;
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);
@@ -214,6 +215,13 @@ public:
 			textPtr->Load(L"./data/s2.script");
 			textPtr->Next();
 			spellCard->image = &pachiSCImg;
+			break;
+		case 9:	//阿空
+			boss = utsuho;
+			poolPtr->AddSon(boss);
+			textPtr->Load(L"./data/s3.script");
+			textPtr->Next();
+			spellCard->image = &utsuhoSC1Img;
 			break;
 		default:
 			if (stageNum == 1)mokouMidBgm->Play();
@@ -338,8 +346,95 @@ public:
 				else if ((*i).blockList.front()->rank == 3)
 					(*i).Translate(1.5, 1.5);
 				else (*i).Translate(0, 1.5);
-				(*i).Rotate(6.0/180);
+				(*i).Rotate(2 * 3.14 /180);
 			}
+			
+			break;
+		case 9:	//阿空
+			if (!textPtr->IsOver()) {
+				if (getKey['Z'] && gameTimer % 5 == 0)
+					textPtr->Next();
+				if (textPtr->IsOver()) {
+					utsuhoMidBgm->Stop();
+					utsuhoBgm->Play();
+				}
+				break;
+			}
+			boss->SetTime();
+			
+			if (boss->HP_now > boss->HP_max * 0.5) {	//SC1
+				if (boss->GetLiveTime() % (60 * 2) == 10) {
+					tanSE->Play();
+					std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+					std::ifstream in(path);
+					int num;
+					in >> num;
+					blockSets.push_back(BlockSet(150, 0));
+					for (int i = 1; i <= num; i++) {
+						float tx, ty;
+						int rank;
+						in >> tx >> ty >> rank;
+						blocks.push_back(new Block(tx*0.8 + (blockSets.back().x) + 100, ty*0.8 + (blockSets.back().y + 150),
+							BlockShow, BlockUpdate, rank, 40, 40));
+						blockSets.back().AddBlock(blocks.back());
+						poolPtr->AddSon(blocks.back());
+					}
+				}
+
+				t = boss->GetLiveTime() / 40;
+				if (boss->GetLiveTime() % 40 == 0) {	//散弹
+					void(*update[6])(Block*);
+					update[0] = [](Block* t) {t->x += 2.5 * cos(60 * 3.14 / 180); t->y += 2.5 * sin(60 * 3.14 / 180); BlockUpdate(t); };
+					update[1] = [](Block* t) {t->x += 2.5 * cos(2 * 60 * 3.14 / 180); t->y += 2.5 * sin(2 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[2] = [](Block* t) {t->x += 2.5 * cos(3 * 60 * 3.14 / 180); t->y += 2.5 * sin(3 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[3] = [](Block* t) {t->x += 2.5 * cos(4 * 60 * 3.14 / 180); t->y += 2.5 * sin(4 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[4] = [](Block* t) {t->x += 2.5 * cos(5 * 60 * 3.14 / 180); t->y += 2.5 * sin(5 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[5] = [](Block* t) {t->x += 2.5 * cos(6 * 60 * 3.14 / 180); t->y += 2.5 * sin(6 * 60 * 3.14 / 180); BlockUpdate(t); };
+					for (int i = 0; i < 6; i++) {
+						blocks.push_back(new Block(boss->x + boss->width*0.5, boss->y + boss->height*0.5, BlockShow,
+							update[i], t % 4 + 1));
+						poolPtr->AddSon(blocks.back());
+					}
+				}
+
+				BossMove();
+				for (auto i = blockSets.begin(); i != blockSets.end(); i++) {
+					(*i).y -= 0.5;
+					(*i).Rotate(0.25 * 3.14 / 180);
+				}
+			}
+			else {	//SC2
+				LoadSC2();
+				t = boss->GetLiveTime() / 40;
+				if (boss->GetLiveTime() % 40 == 0)
+					tanSE->Play();
+				if (boss->GetLiveTime() % 20 == 0) {
+					
+					void(*update[6])(Block*);
+					update[0] = [](Block* t) {t->x += 1 * cos(60 * 3.14 / 180); t->y += 1 * sin(60 * 3.14 / 180); BlockUpdate(t); };
+					update[1] = [](Block* t) {t->x += 1 * cos(2 * 60 * 3.14 / 180); t->y += 1 * sin(2 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[2] = [](Block* t) {t->x += 1 * cos(3 * 60 * 3.14 / 180); t->y += 1 * sin(3 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[3] = [](Block* t) {t->x += 1 * cos(4 * 60 * 3.14 / 180); t->y += 1 * sin(4 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[4] = [](Block* t) {t->x += 1 * cos(5 * 60 * 3.14 / 180); t->y += 1 * sin(5 * 60 * 3.14 / 180); BlockUpdate(t); };
+					update[5] = [](Block* t) {t->x += 1 * cos(6 * 60 * 3.14 / 180); t->y += 1 * sin(6 * 60 * 3.14 / 180); BlockUpdate(t); };
+					blockSets.push_back(BlockSet(boss->x + boss->width*0.5, boss->y + boss->height*0.5));
+					for (int i = 0; i < 6; i++) {
+						blocks.push_back(new Block(blockSets.back().x, blockSets.back().y, BlockShow,
+							update[i], t % 4 + 1));
+						blockSets.back().AddBlock(blocks.back());
+						poolPtr->AddSon(blocks.back());
+					}
+				}
+				for (auto i = blockSets.begin(); i != blockSets.end(); i++) {
+					//(*i).y -= 0.5;
+					//(*i).Translate(0, 1);
+					
+					if(boss->GetLiveTime()/360 %2 == 0)
+						(*i).Rotate((4 * (*i).blockList.front()->x/400) * 0.25 * 3.14 / 180);
+					else (*i).Rotate(-(4 * (*i).blockList.front()->x / 400) * 0.25 * 3.14 / 180);
+				}
+			}
+			
 			
 			break;
 		default:
@@ -407,6 +502,19 @@ private:
 		return stageNum == 3 || stageNum == 6 || stageNum == 9;
 	}
 
+	void LoadSC2() {
+		static bool loaded = false;
+		if (!loaded) {
+			for (auto i = blocks.begin(); i != blocks.end(); i++)
+				(*i)->rank = 0;
+			spellCard->image = &utsuhoSC2Img;
+			alertSE->Play();
+			boss->x = 180;
+			boss->y = 60;
+			loaded = true;
+		}
+	}
+	
 	ObjectBuffer* poolPtr;
 	std::list<Block*> blocks;
 	std::list<BlockSet> blockSets;
