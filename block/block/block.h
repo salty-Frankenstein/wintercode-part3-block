@@ -30,11 +30,14 @@ GameProcess gameProcess;
 
 extern bool getKey[256];
 void keyboard(GameState &state) {
+	static unsigned long long keyDownTime = 0;
+	
 	switch (state)
 	{
 	case MENU:
-		if ((gameTimer) % 5 == 0) {
-			if (getKey[VK_UP])
+		if (!(getKey[VK_UP] || getKey[VK_DOWN] || getKey['Z']))keyDownTime = gameTimer;
+		if ((gameTimer - keyDownTime) % 10 == 1) {
+			if (getKey[VK_UP]) 
 				menuButtonOn = (menuButtonOn + 4) % 5;
 			if (getKey[VK_DOWN])
 				menuButtonOn = (menuButtonOn + 1) % 5;

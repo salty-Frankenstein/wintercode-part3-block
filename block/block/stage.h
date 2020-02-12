@@ -266,8 +266,8 @@ public:
 		{
 		case 3:	//boss1 妹红
 			if (!textPtr->IsOver()) {
-				if (getKey['Z'] && gameTimer % 5 == 0)
-					textPtr->Next();
+				TextNext();
+
 				if (textPtr->IsOver()) {
 					mokouMidBgm->Stop();
 					mokouBgm->Play();
@@ -298,8 +298,7 @@ public:
 			break;
 		case 6:	//姆Q
 			if (!textPtr->IsOver()) {
-				if (getKey['Z'] && gameTimer % 5 == 0)
-					textPtr->Next();
+				TextNext();
 				if (textPtr->IsOver()) {
 					pachiMidBgm->Stop();
 					pachiBgm->Play();
@@ -352,8 +351,7 @@ public:
 			break;
 		case 9:	//阿空
 			if (!textPtr->IsOver()) {
-				if (getKey['Z'] && gameTimer % 5 == 0)
-					textPtr->Next();
+				TextNext();
 				if (textPtr->IsOver()) {
 					utsuhoMidBgm->Stop();
 					utsuhoBgm->Play();
@@ -513,6 +511,15 @@ private:
 			boss->y = 60;
 			loaded = true;
 		}
+	}
+
+	void TextNext() {
+		static unsigned long long keyDownTime = 0;
+		if (!(getKey['Z']))keyDownTime = gameTimer;
+		if ((gameTimer - keyDownTime) == 1)
+			textPtr->Next();
+		if (getKey[VK_CONTROL] && gameTimer % 2 == 0)
+			textPtr->Next();
 	}
 	
 	ObjectBuffer* poolPtr;
