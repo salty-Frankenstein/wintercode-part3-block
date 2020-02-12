@@ -18,7 +18,6 @@ ObjectBuffer gamePool;	//游戏对象池
 GameState gameState = LOAD;
 
 
-
 Bitmap buttonImg[5][2];
 Bitmap titleImg;
 Bitmap coverImg;
@@ -170,13 +169,14 @@ void LoadImages() {
 	BmpInit(Boss::ringImg);
 }
 
-Sound *titleBgm;
-Sound *mokouMidBgm;
-Sound *mokouBgm;
-Sound *pachiMidBgm;
-Sound *pachiBgm;
-Sound *utsuhoMidBgm;
-Sound *utsuhoBgm;
+Music *titleBgm;
+Music *mokouMidBgm;
+Music *mokouBgm;
+Music *pachiMidBgm;
+Music *pachiBgm;
+Music *utsuhoMidBgm;
+Music *utsuhoBgm;
+
 Sound *okSE;
 Sound *selectSE;
 Sound *enepSE;
@@ -188,14 +188,15 @@ Sound *plstSE;
 Sound *bombSE;
 
 Sound *alertSE;
+Sound *pauseSE;
 void LoadSound() {
-	titleBgm = new Sound(L"./src/sound/bgm/menu.mp3");
-	mokouMidBgm = new Sound(L"./src/sound/bgm/bgm01.mp3");
-	mokouBgm = new Sound(L"./src/sound/bgm/bgm02.mp3");
-	pachiMidBgm = new Sound(L"./src/sound/bgm/bgm03.mp3");
-	pachiBgm = new Sound(L"./src/sound/bgm/bgm04.mp3");
-	utsuhoMidBgm = new Sound(L"./src/sound/bgm/bgm05.mp3");
-	utsuhoBgm = new Sound(L"./src/sound/bgm/bgm06.mp3");
+	titleBgm = new Music(L"./src/sound/bgm/menu.mp3", 1.28);
+	mokouMidBgm = new Music(L"./src/sound/bgm/bgm01.mp3");
+	mokouBgm = new Music(L"./src/sound/bgm/bgm02.mp3");
+	pachiMidBgm = new Music(L"./src/sound/bgm/bgm03.mp3");
+	pachiBgm = new Music(L"./src/sound/bgm/bgm04.mp3");
+	utsuhoMidBgm = new Music(L"./src/sound/bgm/bgm05.mp3");
+	utsuhoBgm = new Music(L"./src/sound/bgm/bgm06.mp3");
 
 	okSE = new Sound(L"./src/sound/se/se_ok00.wav");
 	selectSE = new Sound(L"./src/sound/se/se_select00.wav");
@@ -208,16 +209,8 @@ void LoadSound() {
 	bombSE = new Sound(L"./src/sound/se/se_gun00.wav");
 
 	alertSE = new Sound(L"./src/sound/se/se_alert.wav");
+	pauseSE = new Sound(L"./src/sound/se/se_pause.wav");
 }
-
-
-Brush blackBrush, blueBrush;
-
-/*
-Text myText, myTextW;
-Text scoreTxt;
-std::string textOut;
-*/
 
 
 

@@ -67,13 +67,6 @@ void ButtonUpdate(Button* t) {
 
 enum MenuButton { B_GAME_START, B_PLAYER_DATA, B_MUSIC_ROOM, B_OPTION, B_QUIT };
 Button *menuButtons[5];
-/*
-Button *gameStart = new Button(450 + 300, 200, buttonImg[0][0], buttonImg[0][1], ButtonShow, [](Button* t) {}, 143, 27);
-Button *playerData = new Button(450 + 300, 235, buttonImg[1][0], buttonImg[1][1], ButtonShow, [](Button* t) {}, 140, 33);
-Button *musicRoom = new Button(450 + 300, 270, buttonImg[2][0], buttonImg[2][1], ButtonShow, [](Button* t) {}, 150, 27);
-Button *option = new Button(450 + 300, 305, buttonImg[3][0], buttonImg[3][1], ButtonShow, [](Button* t) {}, 89, 33);
-Button *quit = new Button(450 + 300, 340, buttonImg[4][0], buttonImg[4][1], ButtonShow, [](Button* t) {}, 53, 30);
-*/
 
 void LoadMenuButton() {
 	menuButtons[B_GAME_START] = new Button(450 + 300, 200, buttonImg[0][0], buttonImg[0][1], ButtonShow, ButtonUpdate, 143, 27);
@@ -88,10 +81,8 @@ void LoadMenuButton() {
 }
 
 void MenuUI_Load() {
-	static bool loaded = false;
-	if(!loaded)
-		titleBgm->Play();
-	loaded = true;
+	titleBgm->active = true;
+	titleBgm->Play();
 }
 
 extern int menuButtonOn;
@@ -112,11 +103,9 @@ void MenuUI_Update() {
 			title->y += 6 - gameTimer * 0.1;
 		}
 		if (gameTimer / 60 % 2) {
-			//press->x += 0.5;
 			press->opacity += 0.015;
 		}
 		else {
-			//press->x -= 0.5;
 			press->opacity -= 0.015;
 		}
 

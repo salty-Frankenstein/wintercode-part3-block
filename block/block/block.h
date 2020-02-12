@@ -29,50 +29,8 @@ bool bombHitted = false;
 GameProcess gameProcess;
 
 extern bool getKey[256];
-void keyboard(GameState &state) {
-	static unsigned long long keyDownTime = 0;
-	
-	switch (state)
-	{
-	case MENU:
-		if (!(getKey[VK_UP] || getKey[VK_DOWN] || getKey['Z']))keyDownTime = gameTimer;
-		if ((gameTimer - keyDownTime) % 10 == 1) {
-			if (getKey[VK_UP]) 
-				menuButtonOn = (menuButtonOn + 4) % 5;
-			if (getKey[VK_DOWN])
-				menuButtonOn = (menuButtonOn + 1) % 5;
-			if (getKey['Z'] && isMenu) pressedEnter = true;
-		}
-		break;
-	case SELECT:
-		break;
-	case HISCORE:
-		break;
-	case GAME:
-		if (gameProcess == GAME_PLAY) {
-			if (getKey[VK_SPACE])
-				ballActive = true;
-			if (getKey[VK_ESCAPE])
-				gameProcess = GAME_PAUSE;
-		}
-		else if (gameProcess == GAME_PAUSE) {
-			if (getKey[VK_SPACE])
-				gameProcess = GAME_PLAY;
-		}
-		/*
-		if (getKey[VK_UP])
-			y -= 5;
-		if (getKey[VK_DOWN])
-			y += 5;
-		*/
-		break;
-	case QUIT:
-		break;
-	default:
-		break;
-	}
-	
-}
+
+
 
 auto DefaultShow = [](Sprite* t) {
 	if (t->opacity < 0.99) {
@@ -238,7 +196,7 @@ public:
 		:Sprite() {
 		x = _x;
 		y = _y;
-		image = INVISIBLE_IMG;
+		image = Block::img[1][1];
 		showCallback = _showCallback;
 		updateCallback = _updateCallback;
 		width = _width;
@@ -301,6 +259,8 @@ public:
 		isDead = false;
 		mahoujin = new Rotatable(x, y, mahoujinImg,[](Rotatable *t) {},[](Rotatable *t) {}, 200, 200, 1, 0.6, 0, -3);
 		ring = new Rotatable(x, y, ringImg, [](Rotatable *t) {}, [](Rotatable *t) {}, 600, 600, 1, 0.6, 0, 1);
+		radius = 600;
+		hp_x = 390;
 	}
 
 	bool IsDead() {
@@ -327,7 +287,8 @@ public:
 	static Bitmap ringImg;
 	Rotatable* mahoujin;
 	Rotatable* ring;
-
+	double radius;
+	double hp_x;
 private:
 	void(*showCallback)(Boss*);
 	void(*updateCallback)(Boss*);
@@ -360,7 +321,6 @@ void Boss::Update() {
 	mahoujin->y = y + height / 2 - mahoujin->width / 2;
 	ring->Update();
 
-	static double radius = 600;
 	if (radius > 600 * (1.0*HP_now / HP_max))
 		radius -= 1;
 	ring->width = radius;

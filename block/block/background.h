@@ -59,7 +59,7 @@ public:
 		}
 	}
 
-	void Show(){
+	void Update() {
 		if (bombOn) {
 			if (gameTimer / 6 % 2 == 0) {
 				background->x += 1;
@@ -82,9 +82,12 @@ public:
 			background->x = 0;
 			background->y = 0;
 		}
+		mask->Update();
+	}
+
+	void Show(){
 		background->Show();
 		mask->Show();
-		mask->Update();
 	}
 
 private:

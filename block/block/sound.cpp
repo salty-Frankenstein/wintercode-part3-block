@@ -18,4 +18,37 @@ void Sound::Play() {
 
 void Sound::Stop() {
 	pCtrl->Stop();
+
+}
+
+Music::Music() {}
+
+Music::Music(LPCWSTR _soundName, REFTIME _loopBegin) : Sound(_soundName) {
+	active = false; 
+	loopBegin = _loopBegin;
+	//pPos->put_CurrentPosition(0);
+}
+
+void Music::Play() {
+	if (!active)return;
+	pCtrl->Run();
+	Loop();
+}
+
+void Music::Stop() {
+	pCtrl->Stop();
+	pPos->put_CurrentPosition(0);
+	active = false;
+}
+
+void Music::Pause() {
+	if (!active)return;
+	pCtrl->Pause();
+}
+
+void Music::Loop() {
+	REFTIME duration = 0, cur = 0;
+	pPos->get_Duration(&duration);
+	pPos->get_CurrentPosition(&cur);
+	if(cur > duration - 0.1)pPos->put_CurrentPosition(loopBegin);
 }

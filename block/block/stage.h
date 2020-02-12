@@ -12,13 +12,13 @@
 
 void BlockShow(Block* t) {
 	if (t->rank >= 0) {
-		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
 		DefaultShow(t);
 	}
-
 }
 
 void BlockUpdate(Block *t) {
+	if (t->rank >= 0)
+		t->image = Block::img[t->rank][int(gameTimer / (7 + (0.2*t->rank))) % 5 + 1];
 	if (t->rank <= 0) {
 		if (!t->sound) {
 			enepSE->Play();
@@ -33,12 +33,11 @@ void BlockUpdate(Block *t) {
 }
 
 void BossShow(Boss* t) {
-	static double hp_x = 390;
 	DefaultShow(t);
-	if (hp_x > 390 * (1.0*t->HP_now / t->HP_max))
-		hp_x -= 0.2 * (hp_x - (hp_x + 390 * (1.0*t->HP_now / t->HP_max)) / 2);
+	if (t->hp_x > 390 * (1.0*t->HP_now / t->HP_max))
+		t->hp_x -= 0.2 * (t->hp_x - (t->hp_x + 390 * (1.0*t->HP_now / t->HP_max)) / 2);
 	
-	myGFactory->DrawBitmap(t->HP_Img, 30, 15, 30 + hp_x, 20);
+	myGFactory->DrawBitmap(t->HP_Img, 30, 15, 30 + t->hp_x, 20);
 }
 
 void BossUpdate(Boss* t) {
@@ -183,7 +182,7 @@ struct BlockSet {	//砖块对象的集合，用于整体操作
 class Stage {
 public:
 	Stage() {
-		stageNum = 8;
+		stageNum = 2;
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);
@@ -224,9 +223,9 @@ public:
 			spellCard->image = &utsuhoSC1Img;
 			break;
 		default:
-			if (stageNum == 1)mokouMidBgm->Play();
-			else if (stageNum == 4) { mokouBgm->Stop(); pachiMidBgm->Play(); }
-			else if (stageNum == 7) { pachiBgm->Stop(); utsuhoMidBgm->Play(); }
+			if (stageNum == 1) { mokouMidBgm->active = true; mokouMidBgm->Play(); }
+			else if (stageNum == 4) { mokouBgm->Stop(); pachiMidBgm->active = true; pachiMidBgm->Play(); }
+			else if (stageNum == 7) { pachiBgm->Stop(); utsuhoMidBgm->active = true; utsuhoMidBgm->Play(); }
 			boss = nullptr;
 
 			std::string path = "./data/" + std::to_string(stageNum) + ".blk";
@@ -270,6 +269,7 @@ public:
 
 				if (textPtr->IsOver()) {
 					mokouMidBgm->Stop();
+					mokouBgm->active = true;
 					mokouBgm->Play();
 				}
 				break;
@@ -301,6 +301,7 @@ public:
 				TextNext();
 				if (textPtr->IsOver()) {
 					pachiMidBgm->Stop();
+					pachiBgm->active = true;
 					pachiBgm->Play();
 				}
 				break;
@@ -354,12 +355,12 @@ public:
 				TextNext();
 				if (textPtr->IsOver()) {
 					utsuhoMidBgm->Stop();
+					utsuhoBgm->active = true;
 					utsuhoBgm->Play();
 				}
 				break;
 			}
 			boss->SetTime();
-			
 			if (boss->HP_now > boss->HP_max * 0.5) {	//SC1
 				if (boss->GetLiveTime() % (60 * 2) == 10) {
 					tanSE->Play();

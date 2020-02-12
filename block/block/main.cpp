@@ -38,10 +38,8 @@ void Init() {
 	myGFactory->Create();
 	myGFactory->CreateLayer(myLayer);
 	myGFactory->GetHandle()->GetTransform(&oriTransMat);
-	//myText.Create();
-	//myTextW.Create();
 	
-	myGFactory->CreateBrush(blackBrush, _COLOR(Black));
+	//myGFactory->CreateBrush(blackBrush, _COLOR(Black));
 	//GameInit();
 	
 }
@@ -71,8 +69,7 @@ void LoadShow() {
 	else 
 		shoujo->opacity -= 0.015;
 	shoujo->Show();
-	if (loadComplete //&& gameTimer >= 60 * 4
-		) {
+	if (loadComplete) {
 		gameState = MENU;
 		gameTimer = 0;
 	}
@@ -116,41 +113,37 @@ bool Display() {
 			//myGFactory->Clear(_COLOR(Gray));
 			stageNow->Update();
 			gamePool.Update();
-
-			stageNow->Show();
-			gamePool.Show();
-			
+			myBackground.Update();
 		}
-		if (!stageNow->textPtr->IsOver())
+		stageNow->Show();
+		gamePool.Show();
+		if (!stageNow->textPtr->IsOver() && gameProcess != GAME_PAUSE)
 			stageNow->textPtr->Show();
-
+		if (gameProcess == GAME_PAUSE) {
+			titleBgm->Pause();
+			mokouMidBgm->Pause();
+			mokouBgm->Pause();
+			pachiMidBgm->Pause();
+			pachiBgm->Pause();
+			utsuhoMidBgm->Pause();
+			utsuhoBgm->Pause();
+		}
+		else {
+			titleBgm->Play();
+			mokouMidBgm->Play();
+			mokouBgm->Play();
+			pachiMidBgm->Play();
+			pachiBgm->Play();
+			utsuhoMidBgm->Play();
+			utsuhoBgm->Play();
+		}
 		break;
 	case QUIT:
 		break;
 	default:
 		break;
 	}
-	
-	/*
-	myTextW.SetRect(10.f + x, 10.f + y, 300.f + x, 150.f + y);
-	
-	myGFactory->WriteW(myTextW, blackBrush, L"今日もいい天気☆");
-	
-	textOut = "Position:\nx="
-		+ std::to_string(int(50 + x))
-		+ "\ny="
-		+ std::to_string(int(50 + y))
-		+ "\ntime:"
-		+ std::to_string(gameTimer / 60)
-		+"\n"
-		//+ "\nisHit:"
-		//+ std::to_string(isHit(board, borderLeft) || isHit(board, borderRight))
-		;
 
-	//myGFactory->Write(myText, blackBrush, textOut);
-
-	myGFactory->WriteW(myText, blackBrush, t.c_str());
-	*/
 	if (gameState != LOAD) {
 		static long long t;	//每60帧计算一次fps
 		if (gameTimer % 60 == 0) {

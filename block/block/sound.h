@@ -18,11 +18,22 @@ public:
 	void Play();
 	void Stop();
 
-private:
+protected:
 	IGraphBuilder * pGraph;
 	IMediaControl *pCtrl;
 	IMediaPosition *pPos;
 };
 
+class Music :public Sound {
+public:
+	Music();
+	Music(LPCWSTR _soundName, REFTIME _loopBegin = 0);
+	void Pause();
+	void Play();
+	void Stop();
+	void Loop();
+	bool active;
+	REFTIME loopBegin;
+};
 
 #endif // !SOUND_H

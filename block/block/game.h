@@ -19,8 +19,48 @@ int gameLife;
 int gameBomb;
 
 extern bool ballActive;
-
+Stage *stageNow;
 extern GameProcess gameProcess;
+void keyboard(GameState &state) {
+	static unsigned long long keyDownTime = 0;
+
+	switch (state)
+	{
+	case MENU:
+		if (!(getKey[VK_UP] || getKey[VK_DOWN] || getKey['Z']))keyDownTime = gameTimer;
+		if ((gameTimer - keyDownTime) % 10 == 1) {
+			if (getKey[VK_UP])
+				menuButtonOn = (menuButtonOn + 4) % 5;
+			if (getKey[VK_DOWN])
+				menuButtonOn = (menuButtonOn + 1) % 5;
+			if (getKey['Z'] && isMenu) pressedEnter = true;
+		}
+		break;
+	case SELECT:
+		break;
+	case HISCORE:
+		break;
+	case GAME:
+		if (gameProcess == GAME_PLAY) {
+			if (getKey[VK_SPACE] && stageNow->textPtr->IsOver())
+				ballActive = true;
+			if (getKey[VK_ESCAPE]) {
+				pauseSE->Play();
+				gameProcess = GAME_PAUSE;
+			}
+		}
+		else if (gameProcess == GAME_PAUSE) {
+			if (getKey[VK_SPACE])
+				gameProcess = GAME_PLAY;
+		}
+		break;
+	case QUIT:
+		break;
+	default:
+		break;
+	}
+
+}
 
 GameString* hiScoreStr = new GameString(500, 30, 0.48, 5);
 GameString* gameScoreStr = new GameString(500, 55, 0.48, 5);
@@ -40,9 +80,6 @@ Sprite *borderRight = new Sprite(415, 15, boardImg, INVISIBLE_SHOW, DefaultUpdat
 Sprite *borderUp = new Sprite(30, 15 - 100, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 100);
 //Sprite *borderDown = new Sprite(30, 465, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 2);
 
-//Block *block1 = new Block(100, 50, BlockShow, BlockUpdate, 4, 100,100);
-//std::list<Block*> blocks;
-Stage *stageNow;
 
 double ballSpeed = 5;
 double tSpeed = -0.4;
@@ -66,7 +103,7 @@ void BallUpdate(Rotatable* t) {
 		grazeSE->Play();
 		ballVelocity.y = -ballVelocity.y;
 	}
-	//if (isHit(t, borderDown) || isHit(t, borderUp))ballVelocity.y = -ballVelocity.y;
+
 	while (isHit(t, borderLeft))t->x += 1;
 	while (isHit(t, borderRight))t->x -= 1;
 	while (isHit(t, borderUp))t->y += 1;
@@ -116,8 +153,6 @@ void BallUpdate(Rotatable* t) {
 			t->x += normal.x;
 			t->y += normal.y;
 		}
-		//ballVelocity.y = -ballVelocity.y;
-
 	}
 
 	t->x += ballSpeed * ballVelocity.x;
@@ -220,23 +255,17 @@ void BoardUpdate(Sprite* t) {
 }
 
 
-
-//Sprite* mask = new Sprite(0, 0, maskImg, DefaultShow, DefaultUpdate, 600, 600, 0);
 Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5, 4);
 
 void LoadGame() {
 
 
-	//pool.AddSon(test);
-	//gamePool.AddSon(mask);
 	gamePool.AddSon(board);
 
 	gamePool.AddSon(borderLeft);
 	gamePool.AddSon(borderRight);
 	gamePool.AddSon(borderUp);
 	//gamePool.AddSon(borderDown);
-
-	//pool.AddSon(block1);
 
 	
 	gamePool.AddSon(ball);
@@ -264,12 +293,11 @@ void GameLoad() {
 	static bool loaded = false;
 	if (!loaded) {
 		titleBgm->Stop();
-		//gameBgm->Play();
 	}
 	loaded = true;
 }
 
-GameString* paused = new GameString(100, 230, 0.8, 5);
+//GameString* paused = new GameString(100, 230, 0.8, 5);
 Background myBackground;
 void GameUpdate() {
 	switch (gameProcess)
@@ -314,8 +342,8 @@ void GameUpdate() {
 		}
 		break;
 	case GAME_PAUSE:
-		paused->str = "game.paused";
-		paused->Show();
+		//paused->str = "game.paused";
+		//paused->Show();
 		break;
 	case GAME_END:
 		break;
