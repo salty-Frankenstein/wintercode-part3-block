@@ -22,6 +22,7 @@ Bitmap buttonImg[5][2];
 Bitmap pauseImg;
 Bitmap pauseButtonImg[3][2];
 Bitmap pauseMaskImg;
+Bitmap gameoverImg;
 
 Bitmap titleImg;
 Bitmap coverImg;
@@ -107,6 +108,8 @@ void LoadImages() {
 	BmpInit(pauseImg);
 	pauseMaskImg = Bitmap(L"./src/button/mask.png");
 	BmpInit(pauseMaskImg);
+	gameoverImg = Bitmap(L"./src/button/gameover.png");
+	BmpInit(gameoverImg);
 
 	titleImg = Bitmap(L"./src/menu/title.png");
 	coverImg = Bitmap(L"./src/menu/cover.png");

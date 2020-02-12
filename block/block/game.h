@@ -41,7 +41,18 @@ void keyboard(GameState &state) {
 	case HISCORE:
 		break;
 	case GAME:
-		if (gameProcess == GAME_PLAY) {
+		if (gameLife < 0) {
+			if (!(getKey[VK_UP] || getKey[VK_DOWN] || getKey['Z']))keyDownTime = gameTimer;
+			if(pauseButtonOn == 0)pauseButtonOn = 1;
+			if ((gameTimer - keyDownTime) % 10 == 1) {
+				if (getKey[VK_UP] || getKey[VK_DOWN]) {
+					if (pauseButtonOn == 1)pauseButtonOn = 2;
+					else pauseButtonOn = 1;
+				}
+				if (getKey['Z']) pressedEnter = true;
+			}
+		}
+		else if (gameProcess == GAME_PLAY) {
 			if (getKey[VK_SPACE] && stageNow->textPtr->IsOver())
 				ballActive = true;
 			if (getKey[VK_ESCAPE]) {
@@ -59,6 +70,7 @@ void keyboard(GameState &state) {
 				if (getKey['Z']) pressedEnter = true;
 			}
 		}
+		
 		break;
 	case QUIT:
 		break;
@@ -250,9 +262,9 @@ void BoardUpdate(Sprite* t) {
 		gamePool.Sort();
 	}
 
-	if (getKey[VK_LEFT] && !hitLeft)
+	if (getKey[VK_LEFT] && !hitLeft && gameLife >= 0)
 		t->x -= 10;
-	if (getKey[VK_RIGHT] && !hitRight)
+	if (getKey[VK_RIGHT] && !hitRight && gameLife >= 0)
 		t->x += 10;
 	if (stageNow->GetStageNum() == 9 && stageNow->boss->HP_now < stageNow->boss->HP_max * 0.5) {
 		if (t->x > stageNow->boss->x) t->x -= 2;
@@ -284,7 +296,6 @@ void LoadGame() {
 
 	gamePool.AddSon(objNumStr);
 
-	
 }
 
 
@@ -302,7 +313,7 @@ void GameLoad() {
 	gameScore = 0;
 	gameScoreStr->SetNum(gameScore);
 	gameLife = 2;
-	gameBomb = 10;
+	gameBomb = 3;
 	gameProcess = GAME_LOAD;
 	mokouMidBgm->Stop();
 	mokouBgm->Stop();
@@ -349,7 +360,7 @@ void GameUpdate() {
 		if (ball->y > 600 - 100) {
 			pldeadSE->Play();
 			gameLife--;
-			gameBomb = 3;
+			if(gameLife > 0)gameBomb = 3;
 			gameProcess = GAME_RESTART;
 		}
 		if (stageNow->IsOver()) {

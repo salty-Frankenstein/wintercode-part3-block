@@ -117,22 +117,19 @@ bool Display() {
 			gamePool.Update();
 			myBackground.Update();
 		}
+
 		stageNow->Show();
 		gamePool.Show();
 		if (!stageNow->textPtr->IsOver() && gameProcess != GAME_PAUSE)
 			stageNow->textPtr->Show();
 
-		if (gameProcess == GAME_PAUSE) {
+		if (gameProcess == GAME_PAUSE || gameLife < 0) {
 			mokouMidBgm->Pause();
 			mokouBgm->Pause();
 			pachiMidBgm->Pause();
 			pachiBgm->Pause();
 			utsuhoMidBgm->Pause();
 			utsuhoBgm->Pause();
-
-			
-			pauseUI_Pool.Show();
-			PauseUI_Update();
 		}
 		else {
 			mokouMidBgm->Play();
@@ -142,6 +139,17 @@ bool Display() {
 			utsuhoMidBgm->Play();
 			utsuhoBgm->Play();
 		}
+
+		if (gameLife < 0) {
+			failUI_Pool.Show();
+			PauseUI_Update();
+		}
+		else if (gameProcess == GAME_PAUSE) {
+			pauseUI_Pool.Show();
+			PauseUI_Update();
+		}
+		
+
 		break;
 	case QUIT:
 		break;

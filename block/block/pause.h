@@ -13,8 +13,9 @@
 
 enum PauseButton { B_GAME, B_TITLE, B_RETRY };
 Button *pauseButtons[3];
-Sprite *pause, *pauseMask;
+Sprite *pause, *pauseMask, *gameover;
 ObjectBuffer pauseUI_Pool;
+ObjectBuffer failUI_Pool;
 
 void MenuButtonShow(Button* t) {
 	if (t->is_on)myGFactory->DrawBitmap(*(t->onImage), t->x, t->y, t->x + t->width, t->y + t->height);
@@ -26,6 +27,7 @@ void LoadPauseButton() {
 	if (!loaded) {
 		pauseMask = new Sprite(31.5, 15, pauseMaskImg, DefaultShow, DefaultUpdate, 415-30, 465-15, 1, 0.5);
 		pauseUI_Pool.AddSon(pauseMask);
+		failUI_Pool.AddSon(pauseMask);
 
 		pauseButtons[B_GAME] = new Button(150, 225,
 			pauseButtonImg[0][0], pauseButtonImg[0][1], MenuButtonShow, [](Button* t) {}, 244 * 0.6, 61 * 0.6);
@@ -38,8 +40,14 @@ void LoadPauseButton() {
 			pauseUI_Pool.AddSon(pauseButtons[i]);
 		}
 
+		for (int i = 1; i < 3; i++) {
+			failUI_Pool.AddSon(pauseButtons[i]);
+		}
+
 		pause = new Sprite(160, 200 - 30, pauseImg, DefaultShow, DefaultUpdate, 167 * 0.7, 54 * 0.7);
 		pauseUI_Pool.AddSon(pause);
+		gameover = new Sprite(160, 200 - 30, gameoverImg, DefaultShow, DefaultUpdate, 220 * 0.7, 61 * 0.7);
+		failUI_Pool.AddSon(gameover);
 
 		loaded = true;
 	}
@@ -64,9 +72,11 @@ void PauseUI_Update() {
 			gameProcess = GAME_PLAY;
 			break;
 		case B_TITLE:
-
+			gameState = MENU;
+			pauseButtonOn = B_GAME;
 			break;
 		case B_RETRY:
+			pauseButtonOn = B_GAME;
 			GameLoad();
 			break;
 		default:
@@ -74,6 +84,8 @@ void PauseUI_Update() {
 		}
 	}
 }
+
+
 
 
 #endif // !PAUSE_H

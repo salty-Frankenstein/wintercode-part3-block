@@ -61,7 +61,6 @@ void ButtonUpdate(Button* t) {
 		t->stop = false;
 		t->time = gameTimer;
 	}
-
 }
 
 
