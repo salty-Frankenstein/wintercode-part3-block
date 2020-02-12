@@ -36,7 +36,7 @@ void LoadMenuUI() {
 	*/
 }
 
-auto ButtonShow = [](Button* t) {
+void ButtonShow(Button* t) {
 	if (t->is_on)myGFactory->DrawBitmap(*(t->onImage), t->x, t->y, t->x + t->width, t->y + t->height);
 	else myGFactory->DrawBitmap(*(t->image), t->x, t->y, t->x + t->width, t->y + t->height);
 };
@@ -69,18 +69,22 @@ enum MenuButton { B_GAME_START, B_PLAYER_DATA, B_MUSIC_ROOM, B_OPTION, B_QUIT };
 Button *menuButtons[5];
 
 void LoadMenuButton() {
-	menuButtons[B_GAME_START] = new Button(450 + 300, 200, buttonImg[0][0], buttonImg[0][1], ButtonShow, ButtonUpdate, 143, 27);
-	menuButtons[B_PLAYER_DATA] = new Button(450 + 300, 235, buttonImg[1][0], buttonImg[1][1], ButtonShow, ButtonUpdate, 140, 33);
-	menuButtons[B_MUSIC_ROOM] = new Button(450 + 300, 270, buttonImg[2][0], buttonImg[2][1], ButtonShow, ButtonUpdate, 150, 27);
-	menuButtons[B_OPTION] = new Button(450 + 300, 305, buttonImg[3][0], buttonImg[3][1], ButtonShow, ButtonUpdate, 89, 33);
-	menuButtons[B_QUIT] = new Button(450 + 300, 340, buttonImg[4][0], buttonImg[4][1], ButtonShow, ButtonUpdate, 53, 30);
-	for (int i = 0; i <= 4; i++) {
-		menuButtons[i]->opacity = 0.5;
-		menuUI_Pool.AddSon(menuButtons[i]);
+	static bool loaded = false;
+	if (!loaded) {
+		menuButtons[B_GAME_START] = new Button(450 + 300, 200, buttonImg[0][0], buttonImg[0][1], ButtonShow, ButtonUpdate, 143, 27);
+		menuButtons[B_PLAYER_DATA] = new Button(450 + 300, 235, buttonImg[1][0], buttonImg[1][1], ButtonShow, ButtonUpdate, 140, 33);
+		menuButtons[B_MUSIC_ROOM] = new Button(450 + 300, 270, buttonImg[2][0], buttonImg[2][1], ButtonShow, ButtonUpdate, 150, 27);
+		menuButtons[B_OPTION] = new Button(450 + 300, 305, buttonImg[3][0], buttonImg[3][1], ButtonShow, ButtonUpdate, 89, 33);
+		menuButtons[B_QUIT] = new Button(450 + 300, 340, buttonImg[4][0], buttonImg[4][1], ButtonShow, ButtonUpdate, 53, 30);
+		for (int i = 0; i <= 4; i++) {
+			//menuButtons[i]->opacity = 0.5;
+			menuUI_Pool.AddSon(menuButtons[i]);
+		}
+		loaded = true;
 	}
 }
 
-void MenuUI_Load() {
+void MenuBgmPlay() {
 	titleBgm->active = true;
 	titleBgm->Play();
 }
@@ -90,7 +94,7 @@ extern bool pressedEnter;
 extern bool isMenu;
 void MenuUI_Update() {
 	static bool pressed = false;
-	static bool loaded = false;
+	
 	static unsigned long long pressTime = 0;
 	static double opacity = 0;
 	if (!isMenu) {	//title
@@ -119,12 +123,11 @@ void MenuUI_Update() {
 			pressTime = gameTimer;
 		}
 		else {
-			if (!loaded) {
-				LoadMenuButton();
-				menuButtons[menuButtonOn]->is_on = true;
-				//gameStart->is_on = true;
-				loaded = true;
-			}
+
+			LoadMenuButton();
+			//menuButtons[menuButtonOn]->is_on = true;
+			//gameStart->is_on = true;
+			
 			if (gameTimer - pressTime <= 30) {
 				reimu->x -= (6 - (gameTimer - pressTime) * 0.1)*0.9;
 				title->x -= (6 - (gameTimer - pressTime) * 0.1)*0.7;
@@ -152,11 +155,13 @@ void MenuUI_Update() {
 			else menuButtons[i]->is_on = 0;
 		}
 		if (pressedEnter) {
+			pressedEnter = false;
 			okSE->Play();
 			switch (MenuButton(menuButtonOn))
 			{
 			case B_GAME_START:
 				gameState = SELECT;
+				GameLoad();
 				break;
 			case B_OPTION:
 

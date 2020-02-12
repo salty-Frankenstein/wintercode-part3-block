@@ -21,6 +21,7 @@ unsigned long long gameTimer = 0;
 double x = 100, y = 100;
 bool hitLeft = false, hitRight = false;
 int menuButtonOn = 0;
+int pauseButtonOn = 0;
 bool pressedEnter = false;
 bool isMenu = false;
 bool ballActive;
@@ -29,7 +30,7 @@ bool bombHitted = false;
 GameProcess gameProcess;
 
 extern bool getKey[256];
-
+void GameLoad();
 
 
 auto DefaultShow = [](Sprite* t) {
@@ -263,6 +264,11 @@ public:
 		hp_x = 390;
 	}
 
+	~Boss() {
+		delete mahoujin;
+		delete ring;
+	}
+
 	bool IsDead() {
 		return isDead;
 	}
@@ -430,5 +436,8 @@ private:
 };
 
 Bitmap Particle::particleImg[20];
+
+
+
 
 #endif // BLOCK_H

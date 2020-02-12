@@ -53,24 +53,18 @@ void BossUpdate(Boss* t) {
 		t->del = true;
 }
 
-Boss * mokou = new Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
-Boss * pachi = new Boss(200, 60, pachiSImg, BossShow, BossUpdate, 98 * 0.45, 202 * 0.45, 1500);
-Boss * utsuho = new Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 120 * 0.8, 2500);
+
 
 class GameText {
 public:
 	GameText() {
 		text.Create(40 + 30, 340 + 15, 410, 450, 17);
-		background = Bitmap(L"./src/textbg.png");
-		BmpInit(background);
 
 		myGFactory->CreateBrush(blue, _COLOR(Aqua));
 		myGFactory->CreateBrush(red, _COLOR(Red));
 
-		leftImg = new Bitmap(L"./src/boss/reimu/0.png");
-		BmpInit(*leftImg);
-		rightImg = new Bitmap(L"./src/boss/pachi/0.png");
-		BmpInit(*rightImg);
+		leftImg = &GameTextLeft;
+		rightImg = &GameTextRight;
 
 		left = nullptr;
 		right = nullptr;
@@ -78,6 +72,9 @@ public:
 	}
 
 	~GameText() {
+		delete left;
+		delete right;
+		delete fin;
 	}
 
 	void Load(LPCWSTR path) {
@@ -111,7 +108,7 @@ public:
 		}
 		left->Show();
 		right->Show();
-		myGFactory->DrawBitmap(background, 40, 340, 410, 450);
+		myGFactory->DrawBitmap(GameTextBgImg, 40, 340, 410, 450);
 		if (side) {
 			myGFactory->WriteW(text, red, now.c_str());
 		}
@@ -124,6 +121,8 @@ public:
 		return num == 0;
 	}
 
+	
+
 private:
 	Bitmap * leftImg;
 	Bitmap * rightImg;
@@ -131,7 +130,7 @@ private:
 	Sprite * right;			//右侧人物显示
 	bool side;				//目前说话者
 
-	Bitmap background;		//文字背景
+	
 	Text text;
 	Brush blue;
 	Brush red;
@@ -140,6 +139,7 @@ private:
 	std::wstring now;		//目前渲染的文字
 	int num;				//文档总行数
 };
+
 
 struct BlockSet {	//砖块对象的集合，用于整体操作
 	BlockSet(double _x, double _y) {
@@ -179,18 +179,24 @@ struct BlockSet {	//砖块对象的集合，用于整体操作
 	double x, y;
 };
 
+const Boss mokou = Boss(200, 60, mokouSImg, BossShow, BossUpdate, 71 * 0.8, 119 * 0.8, 1000);
+const Boss pachi = Boss(200, 60, pachiSImg, BossShow, BossUpdate, 98 * 0.45, 202 * 0.45, 1500);
+const Boss utsuho = Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 120 * 0.8, 2500);
+
 class Stage {
 public:
 	Stage() {
-		stageNum = 2;
+		stageNum = 0;
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);
+		
 	}
 
 	~Stage() {
 		delete poolPtr;
 		delete textPtr;
+		delete spellCard;
 	}
 
 	void Load() {
@@ -202,21 +208,21 @@ public:
 		switch (stageNum)
 		{
 		case 3:	//妹红
-			boss = mokou;
+			boss = new Boss(mokou);
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s1.script");
 			textPtr->Next();
 			spellCard->image = &mokouSCImg;
 			break;
 		case 6:	//姆Q
-			boss = pachi;
+			boss = new Boss(pachi);
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s2.script");
 			textPtr->Next();
 			spellCard->image = &pachiSCImg;
 			break;
 		case 9:	//阿空
-			boss = utsuho;
+			boss = new Boss(utsuho);
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s3.script");
 			textPtr->Next();
@@ -464,7 +470,7 @@ public:
 		return stageNum;
 	}
 
-	double x, y;	//渲染的开始坐标
+	//double x, y;	//渲染的开始坐标
 	Boss *boss;
 	GameText * textPtr;
 
@@ -528,6 +534,7 @@ private:
 	std::list<BlockSet> blockSets;
 	Sprite * spellCard;
 	int stageNum;
+
 };
 
 #endif // !STAGE_H

@@ -1,6 +1,7 @@
 ﻿#include "resources.h"
 #include "block.h"
 #include "menu.h"
+#include "pause.h"
 #include "game.h"
 #include "background.h"
 #include "timer.h"
@@ -23,6 +24,7 @@ void GameInit() {
 		LoadSound();
 		LoadMenuUI();
 		LoadGame();
+		LoadPauseButton();
 		gamePool.Sort();
 		//FileInit();
 		loaded = true;
@@ -91,7 +93,7 @@ bool Display() {
 		
 		break;
 	case MENU:
-		MenuUI_Load();
+		MenuBgmPlay();
 		menuUI_Pool.Update();
 		menuUI_Pool.Show();
 		MenuUI_Update();
@@ -106,7 +108,7 @@ bool Display() {
 	case GAME:
 		//objNumStr->str = std::to_string(gamePool.Size());
 		objNumStr->str = std::to_string(stageNow->BlockNum());
-		GameLoad();
+		titleBgm->Stop();
 		GameUpdate();
 		myBackground.Show();
 		if (gameProcess != GAME_PAUSE) {
@@ -119,17 +121,20 @@ bool Display() {
 		gamePool.Show();
 		if (!stageNow->textPtr->IsOver() && gameProcess != GAME_PAUSE)
 			stageNow->textPtr->Show();
+
 		if (gameProcess == GAME_PAUSE) {
-			titleBgm->Pause();
 			mokouMidBgm->Pause();
 			mokouBgm->Pause();
 			pachiMidBgm->Pause();
 			pachiBgm->Pause();
 			utsuhoMidBgm->Pause();
 			utsuhoBgm->Pause();
+
+			
+			pauseUI_Pool.Show();
+			PauseUI_Update();
 		}
 		else {
-			titleBgm->Play();
 			mokouMidBgm->Play();
 			mokouBgm->Play();
 			pachiMidBgm->Play();

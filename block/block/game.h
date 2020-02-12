@@ -19,7 +19,7 @@ int gameLife;
 int gameBomb;
 
 extern bool ballActive;
-Stage *stageNow;
+Stage *stageNow = nullptr;
 extern GameProcess gameProcess;
 void keyboard(GameState &state) {
 	static unsigned long long keyDownTime = 0;
@@ -50,8 +50,14 @@ void keyboard(GameState &state) {
 			}
 		}
 		else if (gameProcess == GAME_PAUSE) {
-			if (getKey[VK_SPACE])
-				gameProcess = GAME_PLAY;
+			if (!(getKey[VK_UP] || getKey[VK_DOWN] || getKey['Z']))keyDownTime = gameTimer;
+			if ((gameTimer - keyDownTime) % 10 == 1) {
+				if (getKey[VK_UP])
+					pauseButtonOn = (pauseButtonOn + 2) % 3;
+				if (getKey[VK_DOWN])
+					pauseButtonOn = (pauseButtonOn + 1) % 3;
+				if (getKey['Z']) pressedEnter = true;
+			}
 		}
 		break;
 	case QUIT:
@@ -258,8 +264,6 @@ void BoardUpdate(Sprite* t) {
 Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5, 4);
 
 void LoadGame() {
-
-
 	gamePool.AddSon(board);
 
 	gamePool.AddSon(borderLeft);
@@ -276,26 +280,38 @@ void LoadGame() {
 	gamePool.AddSon(gameScoreStr);
 	gamePool.AddSon(gameLifeStr);
 	gamePool.AddSon(gameBombStr);
-	std::ifstream in(L"./data/hiscore.dat");
-	in >> hiScore;
-	hiScoreStr->SetNum(hiScore);
-	gameScoreStr->SetNum(gameScore);
-	gameLife = 2;
-	gameBomb = 10;
-	gameProcess = GAME_LOAD;
+	
 
 	gamePool.AddSon(objNumStr);
 
-	stageNow = new Stage;
+	
 }
+
 
 void GameLoad() {
 	static bool loaded = false;
 	if (!loaded) {
-		titleBgm->Stop();
+		//loaded = true;
+		delete stageNow;
+		stageNow = new Stage;
 	}
-	loaded = true;
+	
+	std::ifstream in(L"./data/hiscore.dat");
+	in >> hiScore;
+	hiScoreStr->SetNum(hiScore);
+	gameScore = 0;
+	gameScoreStr->SetNum(gameScore);
+	gameLife = 2;
+	gameBomb = 10;
+	gameProcess = GAME_LOAD;
+	mokouMidBgm->Stop();
+	mokouBgm->Stop();
+	pachiMidBgm->Stop();
+	pachiBgm->Stop();
+	utsuhoMidBgm->Stop();
+	utsuhoBgm->Stop();
 }
+
 
 //GameString* paused = new GameString(100, 230, 0.8, 5);
 Background myBackground;

@@ -19,6 +19,10 @@ GameState gameState = LOAD;
 
 
 Bitmap buttonImg[5][2];
+Bitmap pauseImg;
+Bitmap pauseButtonImg[3][2];
+Bitmap pauseMaskImg;
+
 Bitmap titleImg;
 Bitmap coverImg;
 Bitmap reimuImg;
@@ -52,6 +56,10 @@ Bitmap pachiBG_Img;
 Bitmap utsuhoBG_Img;
 Bitmap mask0Img;
 Bitmap mask1Img;
+
+Bitmap GameTextBgImg;
+Bitmap GameTextLeft;
+Bitmap GameTextRight;
 
 void BmpInit(Bitmap &b) {
 	b.Create();
@@ -87,6 +95,18 @@ void LoadImages() {
 			buttonImg[i][j] = Bitmap(stringToLPCWSTR(path));
 			BmpInit(buttonImg[i][j]);
 		}
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 2; j++) {
+			std::string path;
+			path = "./src/button/p" + std::to_string(i) + std::to_string(j) + ".png";
+			pauseButtonImg[i][j] = Bitmap(stringToLPCWSTR(path));
+			BmpInit(pauseButtonImg[i][j]);
+		}
+	pauseImg = Bitmap(L"./src/button/pause.png");
+	BmpInit(pauseImg);
+	pauseMaskImg = Bitmap(L"./src/button/mask.png");
+	BmpInit(pauseMaskImg);
 
 	titleImg = Bitmap(L"./src/menu/title.png");
 	coverImg = Bitmap(L"./src/menu/cover.png");
@@ -167,6 +187,13 @@ void LoadImages() {
 	BmpInit(Boss::HP_Img);
 	BmpInit(Boss::mahoujinImg);
 	BmpInit(Boss::ringImg);
+
+	GameTextBgImg = Bitmap(L"./src/textbg.png");
+	BmpInit(GameTextBgImg);
+	GameTextLeft = Bitmap(L"./src/boss/reimu/0.png");
+	BmpInit(GameTextLeft);
+	GameTextRight = Bitmap(L"./src/boss/pachi/0.png");
+	BmpInit(GameTextRight);
 }
 
 Music *titleBgm;
