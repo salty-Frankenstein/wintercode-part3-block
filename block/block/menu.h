@@ -166,7 +166,8 @@ void MenuUI_Update() {
 
 				break;
 			case B_QUIT:
-				PostQuitMessage(0);
+				PostMessageA(myWnd->GetHandle(), WM_DESTROY, 0, 0);
+				
 				break;
 			default:
 				break;

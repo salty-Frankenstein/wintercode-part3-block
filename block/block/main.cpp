@@ -10,7 +10,7 @@
 
 bool Display();
 
-Wnd *myWnd = new Wnd(655, 520-1, Display, _T("東方靈異伝～For WinterCode 2020"));
+extern Wnd *myWnd = new Wnd(655, 520-1, Display, _T("東方靈異伝～For WinterCode 2020"));
 
 HWND hwnd;
 extern GFactory *myGFactory = new GFactory(hwnd);

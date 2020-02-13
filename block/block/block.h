@@ -11,6 +11,7 @@
 
 #include "engine.h"
 GFactory *myGFactory; 
+Wnd *myWnd;
 D2D1::Matrix3x2F oriTransMat;
 
 Layer myLayer;

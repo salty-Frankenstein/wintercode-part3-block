@@ -44,11 +44,24 @@ void keyboard(GameState &state) {
 	case GAME:
 		if (gameLife < 0) {
 			if (!(getKey[VK_UP] || getKey[VK_DOWN] || getKey['Z']))keyDownTime = gameTimer;
-			if(pauseButtonOn == 0)pauseButtonOn = 1;
+			if (pauseButtonOn == 0) {
+				pauseButtonOn = 1;
+				failButtons[1]->is_on = true;
+				failButtons[2]->is_on = false;
+			}
+				
 			if ((gameTimer - keyDownTime) % 10 == 1) {
 				if (getKey[VK_UP] || getKey[VK_DOWN]) {
-					if (pauseButtonOn == 1)pauseButtonOn = 2;
-					else pauseButtonOn = 1;
+					if (pauseButtonOn == 1) {
+						pauseButtonOn = 2;
+						failButtons[2]->is_on = true;
+						failButtons[1]->is_on = false;
+					}
+					else {
+						pauseButtonOn = 1;
+						failButtons[1]->is_on = true;
+						failButtons[2]->is_on = false;
+					}
 				}
 				if (getKey['Z']) pressedEnter = true;
 			}

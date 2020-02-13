@@ -12,7 +12,7 @@
 #include "resources.h"
 
 enum PauseButton { B_GAME, B_TITLE, B_RETRY };
-Button *pauseButtons[3];
+Button *pauseButtons[3], *failButtons[3];
 Sprite *pause, *pauseMask, *gameover;
 ObjectBuffer pauseUI_Pool;
 ObjectBuffer failUI_Pool;
@@ -27,7 +27,7 @@ void LoadPauseButton() {
 	if (!loaded) {
 		pauseMask = new Sprite(31.5, 15, pauseMaskImg, DefaultShow, DefaultUpdate, 415-30, 465-15, 1, 0.5);
 		pauseUI_Pool.AddSon(pauseMask);
-		failUI_Pool.AddSon(pauseMask);
+		failUI_Pool.AddSon(new Sprite(*pauseMask));
 
 		pauseButtons[B_GAME] = new Button(150, 225,
 			pauseButtonImg[0][0], pauseButtonImg[0][1], MenuButtonShow, [](Button* t) {}, 244 * 0.6, 61 * 0.6);
@@ -41,7 +41,8 @@ void LoadPauseButton() {
 		}
 
 		for (int i = 1; i < 3; i++) {
-			failUI_Pool.AddSon(pauseButtons[i]);
+			failButtons[i] = new Button(*pauseButtons[i]);
+			failUI_Pool.AddSon(failButtons[i]);
 		}
 
 		pause = new Sprite(160, 200 - 30, pauseImg, DefaultShow, DefaultUpdate, 167 * 0.7, 54 * 0.7);
