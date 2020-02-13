@@ -11,6 +11,7 @@
 #define RESOURCES
 #include "block.h"
 #include <fstream>
+#include <vector>
 
 extern GFactory *myGFactory;
 extern bool keyDown;
@@ -64,6 +65,10 @@ Bitmap maskBlackImg;
 Bitmap GameTextBgImg;
 Bitmap GameTextLeft;
 Bitmap GameTextRight;
+std::vector<Bitmap*> reimuTextImg;
+std::vector<Bitmap*> mokouTextImg;
+std::vector<Bitmap*> pachiTextImg;
+std::vector<Bitmap*> utsuhoTextImg;
 
 void BmpInit(Bitmap &b) {
 	b.Create();
@@ -205,6 +210,31 @@ void LoadImages() {
 	BmpInit(GameTextLeft);
 	GameTextRight = Bitmap(L"./src/boss/pachi/0.png");
 	BmpInit(GameTextRight);
+
+	for (int i = 0; i <= 7; i++) {
+		std::string path;
+		path = "./src/boss/reimu/" + std::to_string(i) + ".png";
+		reimuTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		BmpInit(*reimuTextImg[i]);
+	}
+	for (int i = 0; i <= 5; i++) {
+		std::string path;
+		path = "./src/boss/mokou/" + std::to_string(i) + ".png";
+		mokouTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		BmpInit(*mokouTextImg[i]);
+	}
+	for (int i = 0; i <= 3; i++) {
+		std::string path;
+		path = "./src/boss/pachi/" + std::to_string(i) + ".png";
+		pachiTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		BmpInit(*pachiTextImg[i]);
+	}
+	for (int i = 0; i <= 7; i++) {
+		std::string path;
+		path = "./src/boss/utsuho/" + std::to_string(i) + ".png";
+		utsuhoTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		BmpInit(*utsuhoTextImg[i]);
+	}
 }
 
 Music *titleBgm;

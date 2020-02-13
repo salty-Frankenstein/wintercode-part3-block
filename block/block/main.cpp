@@ -190,7 +190,6 @@ bool Display() {
 		}
 		fpsStr->Show();
 	}
-	
 	return myGFactory->EndDraw();
 }
 

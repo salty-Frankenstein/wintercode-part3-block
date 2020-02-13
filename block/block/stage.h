@@ -9,6 +9,7 @@
 #define STAGE_H
 
 #include "resources.h"
+#include <vector>
 
 void BlockShow(Block* t) {
 	if (t->rank >= 0) {
@@ -54,7 +55,6 @@ void BossUpdate(Boss* t) {
 }
 
 
-
 class GameText {
 public:
 	GameText() {
@@ -63,8 +63,10 @@ public:
 		myGFactory->CreateBrush(blue, _COLOR(Aqua));
 		myGFactory->CreateBrush(red, _COLOR(Red));
 
-		leftImg = &GameTextLeft;
-		rightImg = &GameTextRight;
+		imagePool.push_back(&reimuTextImg); //number 0
+		imagePool.push_back(&mokouTextImg); //number 1
+		imagePool.push_back(&pachiTextImg); //number 2
+		imagePool.push_back(&utsuhoTextImg);//number 3
 
 		left = nullptr;
 		right = nullptr;
@@ -78,20 +80,43 @@ public:
 	}
 
 	void Load(LPCWSTR path) {
-		delete left;
-		left = new Sprite(30, 100, leftImg, DefaultShow, DefaultUpdate, 128 * 0.95, 256 * 0.95);
-		delete right;
-		//right = new Sprite(200, 100, rightImg, DefaultShow, DefaultUpdate, 256 * 0.95, 256 * 0.95);
-		right = new Sprite(290, 100, rightImg, DefaultShow, DefaultUpdate, 128 * 0.95, 256 * 0.95);
 		delete fin;
 		fin = new std::wifstream(path);
 		fin->imbue(std::locale("chs"));
 		(*fin) >> num;
+		
+		(*fin) >> leftNum >> rightNum;
+
+		delete left;
+		left = new Sprite(30, 100, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 128 * 0.95, 256 * 0.95);
+		delete right;
+		right = new Sprite(200, 100, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 256 * 0.95, 256 * 0.95);
 	}
 
 	void Next() {
 		if (!IsOver()) {
 			(*fin) >> side;
+			int motion;
+			(*fin) >> motion;
+			if (!side) {
+				auto t = (*imagePool[leftNum])[motion]->GetBitmap()->GetSize();
+				delete left;
+				left = new Sprite(30, 100, (*imagePool[leftNum])[motion],
+					DefaultShow, DefaultUpdate, t.width * 0.95, t.height * 0.95);
+			}
+			else {
+				auto t = (*imagePool[rightNum])[motion]->GetBitmap()->GetSize();
+				delete right;
+				double tx;
+				if (t.width > 300)
+					right = new Sprite(145, 50, (*imagePool[rightNum])[motion],
+						DefaultShow, DefaultUpdate, t.width * 0.7, t.height * 0.7);
+				else if (t.width > 200)
+					right = new Sprite(200, 100, (*imagePool[rightNum])[motion],
+						DefaultShow, DefaultUpdate, t.width * 0.95, t.height * 0.95);
+				else right = new Sprite(285, 85, (*imagePool[rightNum])[motion],
+					DefaultShow, DefaultUpdate, t.width, t.height);
+			}
 			(*fin) >> now;
 			num--;
 		}
@@ -124,8 +149,9 @@ public:
 	
 
 private:
-	Bitmap * leftImg;
-	Bitmap * rightImg;
+	std::vector< std::vector<Bitmap*>* > imagePool;
+	int leftNum;
+	int rightNum;
 	Sprite * left;			//左侧人物显示
 	Sprite * right;			//右侧人物显示
 	bool side;				//目前说话者
@@ -186,7 +212,7 @@ const Boss utsuho = Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 1
 class Stage {
 public:
 	Stage() {
-		stageNum = 0;
+		stageNum = 2;
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);

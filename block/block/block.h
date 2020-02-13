@@ -35,6 +35,7 @@ void GameLoad();
 
 
 auto DefaultShow = [](Sprite* t) {
+	if (t->image == nullptr)return;
 	if (t->opacity < 0.99) {
 		myLayer.layerParameters.opacity = t->opacity;
 		myGFactory->PushLayer(myLayer);
