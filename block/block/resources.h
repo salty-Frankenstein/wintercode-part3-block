@@ -231,14 +231,14 @@ Sound *alertSE;
 Sound *pauseSE;
 void LoadSound() {
 	titleBgm = new Music(L"./src/sound/bgm/menu.mp3", 1.28);
-	mokouMidBgm = new Music(L"./src/sound/bgm/bgm01.mp3");
-	mokouBgm = new Music(L"./src/sound/bgm/bgm02.mp3");
-	pachiMidBgm = new Music(L"./src/sound/bgm/bgm03.mp3");
-	pachiBgm = new Music(L"./src/sound/bgm/bgm04.mp3");
-	utsuhoMidBgm = new Music(L"./src/sound/bgm/bgm05.mp3");
-	utsuhoBgm = new Music(L"./src/sound/bgm/bgm06.mp3");
+	mokouMidBgm = new Music(L"./src/sound/bgm/bgm01.mp3", 6.21);
+	mokouBgm = new Music(L"./src/sound/bgm/bgm02.mp3", 6.52);
+	pachiMidBgm = new Music(L"./src/sound/bgm/bgm03.mp3", 0.64);
+	pachiBgm = new Music(L"./src/sound/bgm/bgm04.mp3",38.57);
+	utsuhoMidBgm = new Music(L"./src/sound/bgm/bgm05.mp3", 0.06);
+	utsuhoBgm = new Music(L"./src/sound/bgm/bgm06.mp3", 3.48);
 	gameoverBgm = new Music(L"./src/sound/bgm/gameover.mp3");
-	endingBgm = new Music(L"./src/sound/bgm/ending.mp3");
+	endingBgm = new Music(L"./src/sound/bgm/ending.mp3", 0.06);
 
 	okSE = new Sound(L"./src/sound/se/se_ok00.wav");
 	selectSE = new Sound(L"./src/sound/se/se_select00.wav");

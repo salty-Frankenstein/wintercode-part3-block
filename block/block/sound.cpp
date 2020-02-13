@@ -26,7 +26,6 @@ Music::Music() {}
 Music::Music(LPCWSTR _soundName, REFTIME _loopBegin) : Sound(_soundName) {
 	active = false; 
 	loopBegin = _loopBegin;
-	//pPos->put_CurrentPosition(0);
 }
 
 void Music::Play() {
