@@ -19,7 +19,6 @@ enum GameState { LOAD, MENU, SELECT, HISCORE, GAME, QUIT };
 enum GameProcess { GAME_LOAD, GAME_RESTART, GAME_PLAY, GAME_PAUSE, GAME_END };
 
 unsigned long long gameTimer = 0;
-double x = 100, y = 100;
 bool hitLeft = false, hitRight = false;
 int menuButtonOn = 0;
 int pauseButtonOn = 0;

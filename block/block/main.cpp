@@ -27,7 +27,6 @@ void GameInit() {
 		LoadGame();
 		LoadPauseButton();
 		gamePool.Sort();
-		//FileInit();
 		loaded = true;
 	}
 	
@@ -41,10 +40,6 @@ void Init() {
 	myGFactory->Create();
 	myGFactory->CreateLayer(myLayer);
 	myGFactory->GetHandle()->GetTransform(&oriTransMat);
-	
-	//myGFactory->CreateBrush(blackBrush, _COLOR(Black));
-	//GameInit();
-	
 }
 
 extern GameState gameState;
@@ -60,7 +55,6 @@ void LoadLoad() {
 		BmpInit(loadingImg);
 		BmpInit(shoujoImg);
 		loadThread = new std::thread(GameInit);
-		//loadThread->join();
 		loaded = true;
 	}
 }
@@ -126,13 +120,10 @@ bool Display() {
 			break;
 		}
 
-		//objNumStr->str = std::to_string(gamePool.Size());
-		objNumStr->str = std::to_string(stageNow->BlockNum());
 		titleBgm->Stop();
 		GameUpdate();
 		myBackground.Show();
 		if (gameProcess != GAME_PAUSE) {
-			//myGFactory->Clear(_COLOR(Gray));
 			stageNow->Update();
 			gamePool.Update();
 			myBackground.Update();
@@ -142,7 +133,10 @@ bool Display() {
 		gamePool.Show();
 		if (!stageNow->textPtr->IsOver() && gameProcess != GAME_PAUSE)
 			stageNow->textPtr->Show();
-		if (!stageNow->defeatTextPtr->IsOver() && gameProcess != GAME_PAUSE && stageNow->boss->IsDead())
+		if (!stageNow->defeatTextPtr->IsOver()
+			&& gameProcess != GAME_PAUSE
+			&& stageNow->boss != nullptr
+			&& stageNow->boss->IsDead())
 			stageNow->defeatTextPtr->Show();
 
 		if (gameProcess == GAME_PAUSE || gameLife < 0) {
@@ -170,7 +164,6 @@ bool Display() {
 			pauseUI_Pool.Show();
 			PauseUI_Update();
 		}
-		
 
 		break;
 	case QUIT:

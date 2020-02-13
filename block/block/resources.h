@@ -30,7 +30,6 @@ Bitmap coverImg;
 Bitmap reimuImg;
 Bitmap pressImg;
 
-Bitmap testImg;
 Bitmap boardImg;
 Bitmap bgImg;
 Bitmap ballRedImg;
@@ -77,16 +76,16 @@ void BmpInit(Bitmap &b) {
 
 void LoadImages() {
 	for (int i = 0; i <= 9; i++) {
-		std::string path;
-		path = "./src/char/" + std::to_string(i) + ".png";
-		GameString::charImg[i + '0'] = Bitmap(stringToLPCWSTR(path));
+		std::wstring path;
+		path = L"./src/char/" + std::to_wstring(i) + L".png";
+		GameString::charImg[i + '0'] = Bitmap(path.c_str());
 		BmpInit(GameString::charImg[i + '0']);
 	}
 
-	for (char i = 'a'; i <= 'z'; i++) {
-		std::string path;
-		path = std::string("./src/char/") + i + std::string(".png");
-		GameString::charImg[i] = Bitmap(stringToLPCWSTR(path));
+	for (wchar_t i = 'a'; i <= 'z'; i++) {
+		std::wstring path;
+		path = std::wstring(L"./src/char/") + i + std::wstring(L".png");
+		GameString::charImg[i] = Bitmap(path.c_str());
 		BmpInit(GameString::charImg[i]);
 	}
 
@@ -99,17 +98,17 @@ void LoadImages() {
 
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 2; j++) {
-			std::string path;
-			path = "./src/button/" + std::to_string(i) + std::to_string(j) + ".png";
-			buttonImg[i][j] = Bitmap(stringToLPCWSTR(path));
+			std::wstring path;
+			path = L"./src/button/" + std::to_wstring(i) + std::to_wstring(j) + L".png";
+			buttonImg[i][j] = Bitmap(path.c_str());
 			BmpInit(buttonImg[i][j]);
 		}
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 2; j++) {
-			std::string path;
-			path = "./src/button/p" + std::to_string(i) + std::to_string(j) + ".png";
-			pauseButtonImg[i][j] = Bitmap(stringToLPCWSTR(path));
+			std::wstring path;
+			path = L"./src/button/p" + std::to_wstring(i) + std::to_wstring(j) + L".png";
+			pauseButtonImg[i][j] = Bitmap(path.c_str());
 			BmpInit(pauseButtonImg[i][j]);
 		}
 	pauseImg = Bitmap(L"./src/button/pause.png");
@@ -124,7 +123,6 @@ void LoadImages() {
 	reimuImg = Bitmap(L"./src/menu/reimu.png");
 	pressImg = Bitmap(L"./src/menu/press.png");
 
-	testImg = Bitmap(L"./src/enemy1.png");
 	boardImg = Bitmap(L"./src/reimu.png");
 	bgImg = Bitmap(L"./src/bg.png");
 	ballRedImg = Bitmap(L"./src/ballred.png");
@@ -155,7 +153,6 @@ void LoadImages() {
 	BmpInit(reimuImg);
 	BmpInit(pressImg);
 
-	BmpInit(testImg);
 	BmpInit(boardImg);
 	BmpInit(bgImg);
 	BmpInit(ballRedImg);
@@ -183,9 +180,9 @@ void LoadImages() {
 
 	for (int i = 1; i <= 4; i++)
 		for (int j = 1; j <= 5; j++) {
-			std::string path;
-			path = "./src/block" + std::to_string(i * 10 + j) + ".png";
-			blockImg[i][j] = Bitmap(stringToLPCWSTR(path));
+			std::wstring path;
+			path = L"./src/block" + std::to_wstring(i * 10 + j) + L".png";
+			blockImg[i][j] = Bitmap(path.c_str());
 			BmpInit(blockImg[i][j]);
 			Block::img[i][j] = &blockImg[i][j];
 		}
@@ -212,27 +209,27 @@ void LoadImages() {
 	BmpInit(GameTextRight);
 
 	for (int i = 0; i <= 7; i++) {
-		std::string path;
-		path = "./src/boss/reimu/" + std::to_string(i) + ".png";
-		reimuTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		std::wstring path;
+		path = L"./src/boss/reimu/" + std::to_wstring(i) + L".png";
+		reimuTextImg.push_back(new Bitmap(path.c_str()));
 		BmpInit(*reimuTextImg[i]);
 	}
 	for (int i = 0; i <= 5; i++) {
-		std::string path;
-		path = "./src/boss/mokou/" + std::to_string(i) + ".png";
-		mokouTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		std::wstring path;
+		path = L"./src/boss/mokou/" + std::to_wstring(i) + L".png";
+		mokouTextImg.push_back(new Bitmap(path.c_str()));
 		BmpInit(*mokouTextImg[i]);
 	}
 	for (int i = 0; i <= 3; i++) {
-		std::string path;
-		path = "./src/boss/pachi/" + std::to_string(i) + ".png";
-		pachiTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		std::wstring path;
+		path = L"./src/boss/pachi/" + std::to_wstring(i) + L".png";
+		pachiTextImg.push_back(new Bitmap(path.c_str()));
 		BmpInit(*pachiTextImg[i]);
 	}
 	for (int i = 0; i <= 7; i++) {
-		std::string path;
-		path = "./src/boss/utsuho/" + std::to_string(i) + ".png";
-		utsuhoTextImg.push_back(new Bitmap(stringToLPCWSTR(path)));
+		std::wstring path;
+		path = L"./src/boss/utsuho/" + std::to_wstring(i) + L".png";
+		utsuhoTextImg.push_back(new Bitmap(path.c_str()));
 		BmpInit(*utsuhoTextImg[i]);
 	}
 }

@@ -160,7 +160,6 @@ private:
 	Text text;
 	Brush blue;
 	Brush red;
-	//Brush blue, gray;
 	std::wifstream* fin;	
 	std::wstring now;		//目前渲染的文字
 	int num;				//文档总行数
@@ -212,7 +211,7 @@ const Boss utsuho = Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 1
 class Stage {
 public:
 	Stage() {
-		stageNum = 8;
+		stageNum = 0;
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		defeatTextPtr = new GameText;
@@ -477,9 +476,6 @@ public:
 					}
 				}
 				for (auto i = blockSets.begin(); i != blockSets.end(); i++) {
-					//(*i).y -= 0.5;
-					//(*i).Translate(0, 1);
-					
 					if(boss->GetLiveTime()/360 %2 == 0)
 						(*i).Rotate((4 * (*i).blockList.front()->x/400) * 0.25 * 3.14 / 180);
 					else (*i).Rotate(-(4 * (*i).blockList.front()->x / 400) * 0.25 * 3.14 / 180);
@@ -516,7 +512,6 @@ public:
 		return stageNum;
 	}
 
-	//double x, y;	//渲染的开始坐标
 	Boss *boss;
 	GameText * textPtr;
 	GameText * defeatTextPtr;

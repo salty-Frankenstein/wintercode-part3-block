@@ -26,14 +26,6 @@ void LoadMenuUI() {
 	menuUI_Pool.AddSon(reimu);
 	menuUI_Pool.AddSon(title);
 	menuUI_Pool.AddSon(press);
-	
-	/*
-	menuUI_Pool.AddSon(gameStart);
-	menuUI_Pool.AddSon(playerData);
-	menuUI_Pool.AddSon(musicRoom);
-	menuUI_Pool.AddSon(option);
-	menuUI_Pool.AddSon(quit);
-	*/
 }
 
 void ButtonShow(Button* t) {
@@ -76,7 +68,6 @@ void LoadMenuButton() {
 		menuButtons[B_OPTION] = new Button(450 + 300, 305, buttonImg[3][0], buttonImg[3][1], ButtonShow, ButtonUpdate, 89, 33);
 		menuButtons[B_QUIT] = new Button(450 + 300, 340, buttonImg[4][0], buttonImg[4][1], ButtonShow, ButtonUpdate, 53, 30);
 		for (int i = 0; i <= 4; i++) {
-			//menuButtons[i]->opacity = 0.5;
 			menuUI_Pool.AddSon(menuButtons[i]);
 		}
 		loaded = true;
@@ -100,7 +91,6 @@ void MenuUI_Update() {
 		if (gameTimer <= 60) {
 			reimu->opacity = opacity;
 			title->opacity = opacity;
-			//cover->opacity = opacity;
 			opacity += 1/60.0;
 			reimu->x -= 6 - gameTimer * 0.1;
 			title->y += 6 - gameTimer * 0.1;
@@ -124,8 +114,6 @@ void MenuUI_Update() {
 		else {
 
 			LoadMenuButton();
-			//menuButtons[menuButtonOn]->is_on = true;
-			//gameStart->is_on = true;
 			
 			if (gameTimer - pressTime <= 30) {
 				reimu->x -= (6 - (gameTimer - pressTime) * 0.1)*0.9;

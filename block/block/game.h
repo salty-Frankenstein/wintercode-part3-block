@@ -98,19 +98,16 @@ GameString* hiScoreStr = new GameString(500, 30, 0.48, 5);
 GameString* gameScoreStr = new GameString(500, 55, 0.48, 5);
 GameString* gameLifeStr = new GameString(500, 102, 0.48, 5, 5);
 GameString* gameBombStr = new GameString(500, 127, 0.48, 5, 5);
-GameString* objNumStr = new GameString(0, 0, 0.48, 5);
 
 void BallUpdate(Rotatable* t);
 void BoardUpdate(Sprite* t);
 Sprite *background = new Sprite(0, 0, bgImg, DefaultShow, [](Sprite* t) {}, 640, 480, 3);
 
 Sprite *board = new Sprite(400, 410, boardImg, DefaultShow, BoardUpdate, 640 / 6.0, 433 / 6.0);
-Sprite *test = new Sprite(0, 0, testImg, DefaultShow, [](Sprite* t) {t->x = x; t->y = y; }, 30, 30);
 
 Sprite *borderLeft = new Sprite(30 - 100, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 100, 450);
 Sprite *borderRight = new Sprite(415, 15, boardImg, INVISIBLE_SHOW, DefaultUpdate, 100, 450);
 Sprite *borderUp = new Sprite(30, 15 - 100, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 100);
-//Sprite *borderDown = new Sprite(30, 465, boardImg, INVISIBLE_SHOW, DefaultUpdate, 385, 2);
 
 
 double ballSpeed = 5;
@@ -215,7 +212,7 @@ auto PlayerBulUpdate = [](Sprite* t) {
 	if (stageNow->boss!=nullptr && isHitCircle(t, stageNow->boss) && !bombOn) {
 		t->del = true;
 		gameScore += 10;
-		stageNow->boss->HP_now -= 100;
+		stageNow->boss->HP_now -= 1;
 	}
 };
 
@@ -245,7 +242,6 @@ auto PlayerBombUpdate = [](Rotatable* t) {
 void BoardUpdate(Sprite* t) {
 	hitLeft = isHit(t, borderLeft);
 	hitRight = isHit(t, borderRight);
-	//t->x = x;
 
 	//shoot bullet
 	if (getKey['Z'] && gameTimer % 5 == 0 && ballActive) {
@@ -288,7 +284,6 @@ void BoardUpdate(Sprite* t) {
 	}
 }
 
-
 Sprite* index = new Sprite(430, 30, indexImg, DefaultShow, DefaultUpdate, 131 * 0.5, 320 * 0.5, 4);
 
 void LoadGame() {
@@ -297,9 +292,7 @@ void LoadGame() {
 	gamePool.AddSon(borderLeft);
 	gamePool.AddSon(borderRight);
 	gamePool.AddSon(borderUp);
-	//gamePool.AddSon(borderDown);
 
-	
 	gamePool.AddSon(ball);
 	gamePool.AddSon(background);
 	gamePool.AddSon(index);
@@ -310,15 +303,12 @@ void LoadGame() {
 	gamePool.AddSon(gameBombStr);
 	
 
-	gamePool.AddSon(objNumStr);
-
 }
 
 
 void GameLoad() {
 	static bool loaded = false;
 	if (!loaded) {
-		//loaded = true;
 		delete stageNow;
 		stageNow = new Stage;
 	}
@@ -339,8 +329,6 @@ void GameLoad() {
 	utsuhoBgm->Stop();
 }
 
-
-//GameString* paused = new GameString(100, 230, 0.8, 5);
 Background myBackground;
 void GameUpdate() {
 	switch (gameProcess)
@@ -386,13 +374,11 @@ void GameUpdate() {
 		if (stageNow->boss != nullptr && stageNow->boss->IsDead()) {
 			ballActive = false;
 		}
-		if (stageNow->IsGameOver()) {
+		if (stageNow->IsGameOver() || (stageNow->GetStageNum() == 9 && stageNow->defeatTextPtr->IsOver())) {
 			gameProcess = GAME_END;
 		}
 		break;
 	case GAME_PAUSE:
-		//paused->str = "game.paused";
-		//paused->Show();
 		break;
 	case GAME_END:
 		
