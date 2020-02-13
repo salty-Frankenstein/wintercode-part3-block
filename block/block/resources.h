@@ -58,6 +58,9 @@ Bitmap utsuhoBG_Img;
 Bitmap mask0Img;
 Bitmap mask1Img;
 
+Bitmap endingImg;
+Bitmap maskBlackImg;
+
 Bitmap GameTextBgImg;
 Bitmap GameTextLeft;
 Bitmap GameTextRight;
@@ -191,6 +194,11 @@ void LoadImages() {
 	BmpInit(Boss::mahoujinImg);
 	BmpInit(Boss::ringImg);
 
+	endingImg = Bitmap(L"./src/button/ending.png");
+	BmpInit(endingImg);
+	maskBlackImg = Bitmap(L"./src/button/maskB.png");
+	BmpInit(maskBlackImg);
+
 	GameTextBgImg = Bitmap(L"./src/textbg.png");
 	BmpInit(GameTextBgImg);
 	GameTextLeft = Bitmap(L"./src/boss/reimu/0.png");
@@ -206,6 +214,8 @@ Music *pachiMidBgm;
 Music *pachiBgm;
 Music *utsuhoMidBgm;
 Music *utsuhoBgm;
+Music *gameoverBgm;
+Music *endingBgm;
 
 Sound *okSE;
 Sound *selectSE;
@@ -227,6 +237,8 @@ void LoadSound() {
 	pachiBgm = new Music(L"./src/sound/bgm/bgm04.mp3");
 	utsuhoMidBgm = new Music(L"./src/sound/bgm/bgm05.mp3");
 	utsuhoBgm = new Music(L"./src/sound/bgm/bgm06.mp3");
+	gameoverBgm = new Music(L"./src/sound/bgm/gameover.mp3");
+	endingBgm = new Music(L"./src/sound/bgm/ending.mp3");
 
 	okSE = new Sound(L"./src/sound/se/se_ok00.wav");
 	selectSE = new Sound(L"./src/sound/se/se_select00.wav");

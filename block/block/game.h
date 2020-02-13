@@ -13,6 +13,7 @@
 #include "stage.h"
 #include "background.h"
 
+
 int hiScore = 0;
 int gameScore = 0;
 int gameLife;
@@ -201,7 +202,7 @@ auto PlayerBulUpdate = [](Sprite* t) {
 	if (stageNow->boss!=nullptr && isHitCircle(t, stageNow->boss) && !bombOn) {
 		t->del = true;
 		gameScore += 10;
-		stageNow->boss->HP_now -= 1;
+		stageNow->boss->HP_now -= 100;
 	}
 };
 
@@ -367,12 +368,16 @@ void GameUpdate() {
 			gameProcess = GAME_LOAD;
 			ballActive = false;
 		}
+		if (stageNow->IsGameOver()) {
+			gameProcess = GAME_END;
+		}
 		break;
 	case GAME_PAUSE:
 		//paused->str = "game.paused";
 		//paused->Show();
 		break;
 	case GAME_END:
+		
 		break;
 	default:
 		break;

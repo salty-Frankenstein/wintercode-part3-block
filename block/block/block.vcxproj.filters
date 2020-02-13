@@ -51,6 +51,9 @@
     <ClInclude Include="pause.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ending.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

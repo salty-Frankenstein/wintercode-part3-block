@@ -2,6 +2,7 @@
 #include "block.h"
 #include "menu.h"
 #include "pause.h"
+#include "ending.h"
 #include "game.h"
 #include "background.h"
 #include "timer.h"
@@ -106,6 +107,25 @@ bool Display() {
 	case HISCORE:
 		break;
 	case GAME:
+		if (gameProcess == GAME_END) {
+			LoadEnding();
+			if (isEnding) {
+				endingPool.Show();
+				EndingUpdate();
+			}
+			else {
+				gameState = MENU;
+				isEnding = true;
+				endingLoaded = false;
+				endingTime = 0;
+				maskBlack->opacity = 1;
+				std::ofstream out("./data/hiscore.dat");
+				out << hiScore << std::endl;
+				out.close();
+			}
+			break;
+		}
+
 		//objNumStr->str = std::to_string(gamePool.Size());
 		objNumStr->str = std::to_string(stageNow->BlockNum());
 		titleBgm->Stop();

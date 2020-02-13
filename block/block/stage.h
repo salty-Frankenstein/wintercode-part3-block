@@ -190,7 +190,7 @@ public:
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);
-		
+		SC2loaded = false;
 	}
 
 	~Stage() {
@@ -508,15 +508,15 @@ private:
 	}
 
 	void LoadSC2() {
-		static bool loaded = false;
-		if (!loaded) {
+		
+		if (!SC2loaded) {
 			for (auto i = blocks.begin(); i != blocks.end(); i++)
 				(*i)->rank = 0;
 			spellCard->image = &utsuhoSC2Img;
 			alertSE->Play();
 			boss->x = 180;
 			boss->y = 60;
-			loaded = true;
+			SC2loaded = true;
 		}
 	}
 
@@ -534,7 +534,7 @@ private:
 	std::list<BlockSet> blockSets;
 	Sprite * spellCard;
 	int stageNum;
-
+	bool SC2loaded;
 };
 
 #endif // !STAGE_H

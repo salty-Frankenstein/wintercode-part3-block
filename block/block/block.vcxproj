@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClInclude Include="background.h" />
     <ClInclude Include="block.h" />
+    <ClInclude Include="ending.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="graphics.h" />
