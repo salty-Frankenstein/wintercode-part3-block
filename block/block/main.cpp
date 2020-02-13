@@ -142,6 +142,8 @@ bool Display() {
 		gamePool.Show();
 		if (!stageNow->textPtr->IsOver() && gameProcess != GAME_PAUSE)
 			stageNow->textPtr->Show();
+		if (!stageNow->defeatTextPtr->IsOver() && gameProcess != GAME_PAUSE && stageNow->boss->IsDead())
+			stageNow->defeatTextPtr->Show();
 
 		if (gameProcess == GAME_PAUSE || gameLife < 0) {
 			mokouMidBgm->Pause();

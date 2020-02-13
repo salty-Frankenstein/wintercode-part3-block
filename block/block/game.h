@@ -280,7 +280,9 @@ void BoardUpdate(Sprite* t) {
 		t->x -= 10;
 	if (getKey[VK_RIGHT] && !hitRight && gameLife >= 0)
 		t->x += 10;
-	if (stageNow->GetStageNum() == 9 && stageNow->boss->HP_now < stageNow->boss->HP_max * 0.5) {
+	if (stageNow->GetStageNum() == 9 
+		&& stageNow->boss->HP_now < stageNow->boss->HP_max * 0.5 
+		&& !stageNow->boss->IsDead()) {
 		if (t->x > stageNow->boss->x) t->x -= 2;
 		else t->x += 2;
 	}
@@ -379,6 +381,9 @@ void GameUpdate() {
 		}
 		if (stageNow->IsOver()) {
 			gameProcess = GAME_LOAD;
+			ballActive = false;
+		}
+		if (stageNow->boss != nullptr && stageNow->boss->IsDead()) {
 			ballActive = false;
 		}
 		if (stageNow->IsGameOver()) {

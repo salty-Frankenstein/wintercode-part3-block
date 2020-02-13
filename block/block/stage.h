@@ -212,9 +212,10 @@ const Boss utsuho = Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 1
 class Stage {
 public:
 	Stage() {
-		stageNum = 2;
+		stageNum = 8;
 		poolPtr = nullptr;
 		textPtr = new GameText;
+		defeatTextPtr = new GameText;
 		spellCard = new Sprite(40, 25, INVISIBLE_IMG, DefaultShow, DefaultUpdate, 364, 18);
 		SC2loaded = false;
 	}
@@ -222,6 +223,7 @@ public:
 	~Stage() {
 		delete poolPtr;
 		delete textPtr;
+		delete defeatTextPtr;
 		delete spellCard;
 	}
 
@@ -238,6 +240,8 @@ public:
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s1.script");
 			textPtr->Next();
+			defeatTextPtr->Load(L"./data/s1d.script");
+			defeatTextPtr->Next();
 			spellCard->image = &mokouSCImg;
 			break;
 		case 6:	//姆Q
@@ -245,6 +249,8 @@ public:
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s2.script");
 			textPtr->Next();
+			defeatTextPtr->Load(L"./data/s2d.script");
+			defeatTextPtr->Next();
 			spellCard->image = &pachiSCImg;
 			break;
 		case 9:	//阿空
@@ -252,6 +258,8 @@ public:
 			poolPtr->AddSon(boss);
 			textPtr->Load(L"./data/s3.script");
 			textPtr->Next();
+			defeatTextPtr->Load(L"./data/s3d.script");
+			defeatTextPtr->Next();
 			spellCard->image = &utsuhoSC1Img;
 			break;
 		default:
@@ -297,13 +305,17 @@ public:
 		{
 		case 3:	//boss1 妹红
 			if (!textPtr->IsOver()) {
-				TextNext();
+				TextNext(textPtr);
 
 				if (textPtr->IsOver()) {
 					mokouMidBgm->Stop();
 					mokouBgm->active = true;
 					mokouBgm->Play();
 				}
+				break;
+			}
+			if (!defeatTextPtr->IsOver() && boss->IsDead()) {
+				TextNext(defeatTextPtr);
 				break;
 			}
 			boss->SetTime();
@@ -330,12 +342,16 @@ public:
 			break;
 		case 6:	//姆Q
 			if (!textPtr->IsOver()) {
-				TextNext();
+				TextNext(textPtr);
 				if (textPtr->IsOver()) {
 					pachiMidBgm->Stop();
 					pachiBgm->active = true;
 					pachiBgm->Play();
 				}
+				break;
+			}
+			if (!defeatTextPtr->IsOver() && boss->IsDead()) {
+				TextNext(defeatTextPtr);
 				break;
 			}
 			boss->SetTime();
@@ -384,12 +400,16 @@ public:
 			break;
 		case 9:	//阿空
 			if (!textPtr->IsOver()) {
-				TextNext();
+				TextNext(textPtr);
 				if (textPtr->IsOver()) {
 					utsuhoMidBgm->Stop();
 					utsuhoBgm->active = true;
 					utsuhoBgm->Play();
 				}
+				break;
+			}
+			if (!defeatTextPtr->IsOver() && boss->IsDead()) {
+				TextNext(defeatTextPtr);
 				break;
 			}
 			boss->SetTime();
@@ -476,7 +496,7 @@ public:
 	bool IsOver() {
 		if(!IsBossStage())
 			return blocks.size() == 0;
-		return boss->IsDead();
+		return boss->IsDead() && defeatTextPtr->IsOver();
 	}
 
 	int BlockNum() {
@@ -499,7 +519,7 @@ public:
 	//double x, y;	//渲染的开始坐标
 	Boss *boss;
 	GameText * textPtr;
-
+	GameText * defeatTextPtr;
 private:
 	void BossMove() {
 		if (boss->GetLiveTime() / 70 % 8 == 0) {
@@ -546,13 +566,13 @@ private:
 		}
 	}
 
-	void TextNext() {
+	void TextNext(GameText * tPtr) {
 		static unsigned long long keyDownTime = 0;
 		if (!(getKey['Z']))keyDownTime = gameTimer;
 		if ((gameTimer - keyDownTime) == 1)
-			textPtr->Next();
+			tPtr->Next();
 		if (getKey[VK_CONTROL] && gameTimer % 2 == 0)
-			textPtr->Next();
+			tPtr->Next();
 	}
 	
 	ObjectBuffer* poolPtr;
