@@ -211,7 +211,7 @@ const Boss utsuho = Boss(200, 60, utsuhoSImg, BossShow, BossUpdate, 100 * 0.8, 1
 class Stage {
 public:
 	Stage() {
-		stageNum = 0;
+		stageNum = 2;
 		poolPtr = nullptr;
 		textPtr = new GameText;
 		defeatTextPtr = new GameText;
@@ -237,27 +237,27 @@ public:
 		case 3:	//妹红
 			boss = new Boss(mokou);
 			poolPtr->AddSon(boss);
-			textPtr->Load(L"./data/s1.script");
+			textPtr->Load(L"./project/data/s1.script");
 			textPtr->Next();
-			defeatTextPtr->Load(L"./data/s1d.script");
+			defeatTextPtr->Load(L"./project/data/s1d.script");
 			defeatTextPtr->Next();
 			spellCard->image = &mokouSCImg;
 			break;
 		case 6:	//姆Q
 			boss = new Boss(pachi);
 			poolPtr->AddSon(boss);
-			textPtr->Load(L"./data/s2.script");
+			textPtr->Load(L"./project/data/s2.script");
 			textPtr->Next();
-			defeatTextPtr->Load(L"./data/s2d.script");
+			defeatTextPtr->Load(L"./project/data/s2d.script");
 			defeatTextPtr->Next();
 			spellCard->image = &pachiSCImg;
 			break;
 		case 9:	//阿空
 			boss = new Boss(utsuho);
 			poolPtr->AddSon(boss);
-			textPtr->Load(L"./data/s3.script");
+			textPtr->Load(L"./project/data/s3.script");
 			textPtr->Next();
-			defeatTextPtr->Load(L"./data/s3d.script");
+			defeatTextPtr->Load(L"./project/data/s3d.script");
 			defeatTextPtr->Next();
 			spellCard->image = &utsuhoSC1Img;
 			break;
@@ -267,7 +267,7 @@ public:
 			else if (stageNum == 7) { pachiBgm->Stop(); utsuhoMidBgm->active = true; utsuhoMidBgm->Play(); }
 			boss = nullptr;
 
-			std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+			std::string path = "./project/data/" + std::to_string(stageNum) + ".blk";
 			std::ifstream in(path);
 			int num;
 			in >> num;
@@ -320,7 +320,7 @@ public:
 			boss->SetTime();
 			if (boss->GetLiveTime() % (60 * 3) == 10) {
 				tanSE->Play();
-				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+				std::string path = "./project/data/" + std::to_string(stageNum) + ".blk";
 				std::ifstream in(path);
 				int num;
 				in >> num;
@@ -362,7 +362,7 @@ public:
 				else if (t == 20)dx = 0, drank = 1;
 				else dx = 70, drank = 2;
 				tanSE->Play();
-				std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+				std::string path = "./project/data/" + std::to_string(stageNum) + ".blk";
 				std::ifstream in(path);
 				int num;
 				in >> num;
@@ -415,7 +415,7 @@ public:
 			if (boss->HP_now > boss->HP_max * 0.5) {	//SC1
 				if (boss->GetLiveTime() % (60 * 2) == 10) {
 					tanSE->Play();
-					std::string path = "./data/" + std::to_string(stageNum) + ".blk";
+					std::string path = "./project/data/" + std::to_string(stageNum) + ".blk";
 					std::ifstream in(path);
 					int num;
 					in >> num;

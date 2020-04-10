@@ -46,8 +46,8 @@ extern GameState gameState;
 
 
 std::thread* loadThread;
-Bitmap loadingImg(L"./src/loading.png");
-Bitmap shoujoImg(L"./src/shoujo.png");
+Bitmap loadingImg(L"./project/src/loading.png");
+Bitmap shoujoImg(L"./project/src/shoujo.png");
 Sprite* shoujo = new Sprite(460, 420, shoujoImg, DefaultShow, DefaultUpdate, 211 * 0.8, 58 * 0.8);
 void LoadLoad() {
 	static bool loaded = false;
@@ -113,7 +113,7 @@ bool Display() {
 				endingLoaded = false;
 				endingTime = 0;
 				maskBlack->opacity = 1;
-				std::ofstream out("./data/hiscore.dat");
+				std::ofstream out("./project/data/hiscore.dat");
 				out << hiScore << std::endl;
 				out.close();
 			}

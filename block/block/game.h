@@ -313,7 +313,7 @@ void GameLoad() {
 		stageNow = new Stage;
 	}
 	
-	std::ifstream in(L"./data/hiscore.dat");
+	std::ifstream in(L"./project/data/hiscore.dat");
 	in >> hiScore;
 	hiScoreStr->SetNum(hiScore);
 	gameScore = 0;
@@ -364,7 +364,7 @@ void GameUpdate() {
 		if (ball->y > 600 - 100) {
 			pldeadSE->Play();
 			gameLife--;
-			if(gameLife > 0)gameBomb = 3;
+			if(gameLife >= 0)gameBomb = 3;
 			gameProcess = GAME_RESTART;
 		}
 		if (stageNow->IsOver()) {
